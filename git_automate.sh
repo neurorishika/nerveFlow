@@ -1,7 +1,7 @@
+cd /home/iiser/Saptarshi/nerveFlow
+
 git add .
 
-date +"%h %d %y %r"
-
-git commit -m $(printf "%s" $(date +"%h %d %y %r"))
+git commit -m $(printf "%s" $(date +"%h_%d_%y_%r"))
 
 git push origin master
