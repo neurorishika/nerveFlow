@@ -1,3 +1,5 @@
+#!/bin/bash
+
 cd /home/iiser/Saptarshi/nerveFlow
 
 git add .
