@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 n_n = int(input("Number of Neurons (Default = 120) : ") or "120")
 time = float(input("Time in ms (Default = 1000) : ") or "1000")
-eps = float(input("Time Resolution (Default = 0.01) : ") or "0.01")
+eps = float(input("Time Resolution in ms (Default = 0.01) : ") or "0.01")
 
 current_input = np.zeros((n_n,int(time/eps)))
 t = np.arange(0,time,eps)

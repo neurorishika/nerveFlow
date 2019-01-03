@@ -8,4 +8,14 @@ for n,i in enumerate(["state.batch"+str(n+1)+".npy" for n in range(batch)]):
     else:
         l = np.concatenate([l,np.load(i)[1:,:]])
 
-np.savetxt("state.vector",l,delimiter=",",fmt="%.3f")
+print(l.shape)
+
+output = input("Binary(B) or ASCII(A):")
+
+if output == "B":
+    np.save("output",l)
+elif output == "A":
+    np.savetxt("output.csv",l,delimiter=",",fmt="%.3f")
+else:
+    print("Wrong Input. Saving as Binary.")
+    np.save("output",l)
