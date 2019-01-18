@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd /home/iiser/Saptarshi/2018/nerveFlow
+cd /home/iiser/Saptarshi/nerveFlow
 
 find ./* -size +100M | cat >> .gitignore
 
