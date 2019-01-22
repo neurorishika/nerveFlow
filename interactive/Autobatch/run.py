@@ -16,7 +16,7 @@ import sys
 
 scale = 1 # simulation scale
 
-sim_time = 500 # simulation time
+sim_time = 1000000 # max simulation time
 
 sim_res = 0.01 # simulation resolution
 

@@ -7,8 +7,8 @@
 from subprocess import call
 import numpy as np
 
-total_time = 2000
-n_splits = 4
+total_time = int(input("Enter Simulation Length ( Default: 2000 ) : ") or "2000")
+n_splits = int(input("Enter Number of Splits ( Default: 2 ) : ") or "2")
 time = np.split(np.arange(0,total_time,0.01),n_splits)
 
 for n,i in enumerate(time):
