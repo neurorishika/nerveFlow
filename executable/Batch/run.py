@@ -343,7 +343,7 @@ print("Number of Synapses:",(n_syn_ach+n_syn_fgaba))
 print(n_n,(n_syn_ach+n_syn_fgaba))
 
 
-n_batch = 2
+n_batch = int(input("Enter Number of Sub-batches:") or '1')
 t_batch = np.array_split(t,n_batch)
 
 t_ = time.time()

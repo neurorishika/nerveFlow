@@ -6,6 +6,9 @@
 
 from subprocess import call
 import numpy as np
+import time as t
+
+start = t.time()
 
 total_time = int(input("Enter Simulation Length ( Default: 2000 ) : ") or "2000")
 n_splits = int(input("Enter Number of Splits ( Default: 2 ) : ") or "2")
@@ -20,3 +23,4 @@ np.save("time",time)
 for i in range(n_splits):
     call(['python','run.py',str(i)])
 
+print("Simulation Completed. Time taken: {:0.2f}".format(t.time()-start))
