@@ -36,6 +36,5 @@ for ni,n in enumerate(nns):
 
             bench[ni,nj,r]= kt.time()-start
             call(['rm','*.npy'])
-
-np.save("bench",bench)
+            np.save("bench",bench)
 
