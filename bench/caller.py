@@ -20,6 +20,7 @@ for ni,n in enumerate(nns):
     for nj,t in enumerate(times):
         for r in range(rep):
             
+            print(n,t,r)
             start = kt.time()
             call(['python','gen_input.py',str(n),str(t),str(eps)])
             
