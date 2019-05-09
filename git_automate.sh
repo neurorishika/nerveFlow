@@ -4,8 +4,8 @@ cd /home/iiser/Saptarshi/nerveFlow
 
 find ./* -size +100M | cat >> .gitignore
 
-git add .
+sudo git add .
 
-git commit -m $(printf "%s" $(date +"%h_%d_%y_%r"))
+sudo git commit -m $(printf "%s" $(date +"%h_%d_%y_%r"))
 
-git push origin master
+sudo git push origin master

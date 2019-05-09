@@ -1,0 +1,15 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{class} \PYG{n+nc}{\PYGZus{}Integrator}\PYG{p}{():}
+    \PYG{k}{def} \PYG{n+nf}{integrate}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{,}\PYG{n}{func}\PYG{p}{,}\PYG{n}{y0}\PYG{p}{,}\PYG{n}{t}\PYG{p}{):}
+        \PYG{n}{time\PYGZus{}delta\PYGZus{}grid} \PYG{o}{=} \PYG{n}{t}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{:]} \PYG{o}{\PYGZhy{}} \PYG{n}{t}\PYG{p}{[:}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{]}
+        \PYG{n}{y} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{zeros}\PYG{p}{((}\PYG{n}{y0}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{],}\PYG{n}{t}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]))}
+        \PYG{n}{y}\PYG{p}{[:,}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{y0}
+        \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{time\PYGZus{}delta\PYGZus{}grid}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]):}
+            \PYG{n}{y}\PYG{p}{[:,}\PYG{n}{i}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{=} \PYG{n}{time\PYGZus{}delta\PYGZus{}grid}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]}\PYG{o}{*}\PYG{n}{func}\PYG{p}{(}\PYG{n}{y}\PYG{p}{[:,}\PYG{n}{i}\PYG{p}{],}\PYG{n}{t}\PYG{p}{[}\PYG{n}{i}\PYG{p}{])}\PYG{o}{+}\PYG{n}{y}\PYG{p}{[:,}\PYG{n}{i}\PYG{p}{]}
+        \PYG{k}{return} \PYG{n}{y}
+\PYG{k}{def} \PYG{n+nf}{odeint\PYGZus{}euler}\PYG{p}{(}\PYG{n}{func}\PYG{p}{,}\PYG{n}{y0}\PYG{p}{,}\PYG{n}{t}\PYG{p}{):}
+    \PYG{n}{y0} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{(}\PYG{n}{y0}\PYG{p}{)}
+    \PYG{n}{t} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{(}\PYG{n}{t}\PYG{p}{)}
+    \PYG{k}{return} \PYG{n}{\PYGZus{}Integrator}\PYG{p}{()}\PYG{o}{.}\PYG{n}{integrate}\PYG{p}{(}\PYG{n}{func}\PYG{p}{,}\PYG{n}{y0}\PYG{p}{,}\PYG{n}{t}\PYG{p}{)}
+\PYG{n}{solution} \PYG{o}{=} \PYG{n}{odeint\PYGZus{}euler}\PYG{p}{(}\PYG{n}{f}\PYG{p}{,[}\PYG{l+m+mf}{1.}\PYG{p}{,}\PYG{l+m+mf}{0.}\PYG{p}{],}\PYG{n}{t}\PYG{p}{)}
+\end{Verbatim}
