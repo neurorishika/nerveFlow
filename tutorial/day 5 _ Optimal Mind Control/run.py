@@ -1,6 +1,6 @@
 import tensorflow as tf
 import numpy as np
-import nerveflow as nv
+import tf_integrator as tf_int
 
 import sys
 
@@ -224,7 +224,7 @@ for n,i in enumerate(t_batch):
     # Set state_vector as the initial condition
     init_state = tf.constant(state_vector, dtype=tf.float64)
     # Create the Integrator computation graph over the current batch of t array
-    tensor_state = nv.odeint(dXdt, init_state, i, n_n, F_b)
+    tensor_state = tf_int.odeint(dXdt, init_state, i, n_n, F_b)
     
     # Initialize variables and run session
     with tf.Session() as sess:

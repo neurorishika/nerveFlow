@@ -2,13 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
+
 def tf_check_type(t, y0): # Ensure Input is Correct
     if not (y0.dtype.is_floating and t.dtype.is_floating):
         raise TypeError('Error in Datatype')
-
-def tf_check_increasing(t): # Ensure Time is Monotonically Increasing
-    assert_op = tf.Assert(tf.reduce_all(t[1:]>t[:-1]),["Time must be monotonic"])
-    return tf.control_dependencies([assert_op])
 
 class _Tf_Integrator():
     
@@ -19,11 +16,7 @@ class _Tf_Integrator():
     
     def integrate(self, func, y0, t): 
         time_delta_grid = t[1:] - t[:-1]
-        scan_func = self._make_scan_func(func)
-        y = tf.scan(scan_func, (t[:-1], time_delta_grid),y0)
-        return tf.concat([[y0], y], axis=0)
-    
-    def _make_scan_func(self, func): # stepper function
+        
         def scan_func(y, t_dt): 
             # recall the necessary variables
             n_ = self.n_
@@ -62,7 +55,10 @@ class _Tf_Integrator():
                 return tf.concat([out[:-n_],fire_t_],0)
             else:
                 return out
-        return scan_func
+            
+        y = tf.scan(scan_func, (t[:-1], time_delta_grid),y0)
+        
+        return tf.concat([[y0], y], axis=0)
     
     def _step_func(self, func, t, dt, y):
         k1 = func(y, t)
@@ -79,5 +75,4 @@ def odeint(func, y0, t, n_, F_b):
     t = tf.convert_to_tensor(t, preferred_dtype=tf.float64, name='t')
     y0 = tf.convert_to_tensor(y0, name='y0')
     tf_check_type(y0,t)
-    with tf_check_increasing(t):
-        return _Tf_Integrator(n_, F_b).integrate(func,y0,t)
+    return _Tf_Integrator(n_, F_b).integrate(func,y0,t)
