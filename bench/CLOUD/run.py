@@ -372,7 +372,7 @@ for n,i in enumerate(t_batch):
     #print("Finished in",np.round(t1-t0,2),"secs...Saving...",end="")
     
     state_vector = state[-1,:]
-    np.save("batch"+str(int(sys.argv[1])+1)+"_part_"+str(n+1),state)
+    #np.save("batch"+str(int(sys.argv[1])+1)+"_part_"+str(n+1),state)
 
     state=None
     t2 = time.time()
