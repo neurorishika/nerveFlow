@@ -4,6 +4,9 @@
 # In[ ]:
 
 
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' 
+
 import tensorflow as tf
 import numpy as np
 import nerveflow as nv
@@ -11,12 +14,9 @@ import nerveflow as nv
 import time
 import sys
 
-
 ###########SIMULATION FRAMEWORK############
 
 scale = int(sys.argv[2])/120 # simulation scale
-
-print(scale)
 
 sim_time = 1000000 # max simulation time
 
@@ -380,5 +380,5 @@ for n,i in enumerate(t_batch):
 
 np.save("state_vector",state_vector)
 
-print("Simulation Completed. Total Execution Time:",np.round(time.time()-t_,3),"secs")
+print(int(sys.argv[1])+1,"/",int(sys.argv[4]),"Completed.",np.round(time.time()-t_,3),"secs")
 

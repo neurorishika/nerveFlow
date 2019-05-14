@@ -9,6 +9,8 @@ import numpy as np
 import sys
 import time as kt
 
+bench_start = kt.time()
+
 nns = [12,24,48,96,120,240,360,480]
 times = [1000.0,2000.0,2500.0,3000.0,3500.0,4000.0]
 rep = 5
@@ -20,7 +22,8 @@ for ni,n in enumerate(nns):
     for nj,t in enumerate(times):
         for r in range(rep):
             
-            print(n,t,r)
+            print("\n\n!!!!! Starting Simulation !!!!!\n\n")
+            print("Number of Neurons:",n,"Length of Simulation:",t,"Replicate Number:",r)
             start = kt.time()
             call(['python3','gen_input.py',str(n),str(t),str(eps)])
             
@@ -33,9 +36,12 @@ for ni,n in enumerate(nns):
             np.save("time",time,allow_pickle=True)
 
             for i in range(int(t/100)):
-                call(['python3','run.py',str(i),str(n),str(eps)])
+                call(['python3','run.py',str(i),str(n),str(eps),str(int(t/100))])
 
             bench[ni,nj,r]= kt.time()-start
             call(['rm','*.npy'])
             np.save("bench",bench)
 
+bench_end = kt.time()
+
+print("Benchmark ran for",bench_end-bench_start,"seconds")

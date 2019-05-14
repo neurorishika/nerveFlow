@@ -1,5 +1,5 @@
 #!/bin/bash
 
-cd /nerveFlow/bench/CLOUD
+cd bench/CLOUD
 
 python3 caller.py
