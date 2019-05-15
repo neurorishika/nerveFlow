@@ -1,0 +1,17 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{}\PYGZsh{} Acetylcholine Synaptic Current \PYGZsh{}\PYGZsh{}}
+\PYG{k}{def} \PYG{n+nf}{I\PYGZus{}ach}\PYG{p}{(}\PYG{n}{o}\PYG{p}{,}\PYG{n}{V}\PYG{p}{):}
+    \PYG{n}{o\PYGZus{}} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{Variable}\PYG{p}{([}\PYG{l+m+mf}{0.0}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}\PYG{o}{**}\PYG{l+m+mi}{2}\PYG{p}{,}\PYG{n}{dtype}\PYG{o}{=}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{float64}\PYG{p}{)}
+    \PYG{n}{ind} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{boolean\PYGZus{}mask}\PYG{p}{(}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{range}\PYG{p}{(}\PYG{n}{n\PYGZus{}n}\PYG{o}{**}\PYG{l+m+mi}{2}\PYG{p}{),}\PYG{n}{ach\PYGZus{}mat}\PYG{o}{.}\PYG{n}{reshape}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{)} \PYG{o}{==} \PYG{l+m+mi}{1}\PYG{p}{)}
+    \PYG{n}{o\PYGZus{}} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{scatter\PYGZus{}update}\PYG{p}{(}\PYG{n}{o\PYGZus{}}\PYG{p}{,}\PYG{n}{ind}\PYG{p}{,}\PYG{n}{o}\PYG{p}{)}
+    \PYG{n}{o\PYGZus{}} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{transpose}\PYG{p}{(}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{reshape}\PYG{p}{(}\PYG{n}{o\PYGZus{}}\PYG{p}{,(}\PYG{n}{n\PYGZus{}n}\PYG{p}{,}\PYG{n}{n\PYGZus{}n}\PYG{p}{)))}
+    \PYG{k}{return} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{reduce\PYGZus{}sum}\PYG{p}{(}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{transpose}\PYG{p}{((}\PYG{n}{o\PYGZus{}}\PYG{o}{*}\PYG{p}{(}\PYG{n}{V}\PYG{o}{\PYGZhy{}}\PYG{n}{E\PYGZus{}ach}\PYG{p}{))}\PYG{o}{*}\PYG{n}{g\PYGZus{}ach}\PYG{p}{),}\PYG{l+m+mi}{1}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{}\PYGZsh{} GABAa Synaptic Current \PYGZsh{}\PYGZsh{}}
+\PYG{k}{def} \PYG{n+nf}{I\PYGZus{}gaba}\PYG{p}{(}\PYG{n}{o}\PYG{p}{,}\PYG{n}{V}\PYG{p}{):}
+    \PYG{n}{o\PYGZus{}} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{Variable}\PYG{p}{([}\PYG{l+m+mf}{0.0}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}\PYG{o}{**}\PYG{l+m+mi}{2}\PYG{p}{,}\PYG{n}{dtype}\PYG{o}{=}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{float64}\PYG{p}{)}
+    \PYG{n}{ind} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{boolean\PYGZus{}mask}\PYG{p}{(}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{range}\PYG{p}{(}\PYG{n}{n\PYGZus{}n}\PYG{o}{**}\PYG{l+m+mi}{2}\PYG{p}{),}\PYG{n}{gaba\PYGZus{}mat}\PYG{o}{.}\PYG{n}{reshape}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{)} \PYG{o}{==} \PYG{l+m+mi}{1}\PYG{p}{)}
+    \PYG{n}{o\PYGZus{}} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{scatter\PYGZus{}update}\PYG{p}{(}\PYG{n}{o\PYGZus{}}\PYG{p}{,}\PYG{n}{ind}\PYG{p}{,}\PYG{n}{o}\PYG{p}{)}
+    \PYG{n}{o\PYGZus{}} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{transpose}\PYG{p}{(}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{reshape}\PYG{p}{(}\PYG{n}{o\PYGZus{}}\PYG{p}{,(}\PYG{n}{n\PYGZus{}n}\PYG{p}{,}\PYG{n}{n\PYGZus{}n}\PYG{p}{)))}
+    \PYG{k}{return} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{reduce\PYGZus{}sum}\PYG{p}{(}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{transpose}\PYG{p}{((}\PYG{n}{o\PYGZus{}}\PYG{o}{*}\PYG{p}{(}\PYG{n}{V}\PYG{o}{\PYGZhy{}}\PYG{n}{E\PYGZus{}gaba}\PYG{p}{))}\PYG{o}{*}\PYG{n}{g\PYGZus{}gaba}\PYG{p}{),}\PYG{l+m+mi}{1}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{}\PYGZsh{} Other Currents remain the same \PYGZsh{}\PYGZsh{}}
+\end{Verbatim}

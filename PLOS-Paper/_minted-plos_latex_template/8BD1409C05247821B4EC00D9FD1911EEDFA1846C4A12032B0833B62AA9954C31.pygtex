@@ -1,0 +1,29 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Define the Number of Batches}
+\PYG{n}{n\PYGZus{}batch} \PYG{o}{=} \PYG{l+m+mi}{2}
+\PYG{c+c1}{\PYGZsh{} Split t array into batches using numpy}
+\PYG{n}{t\PYGZus{}batch} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array\PYGZus{}split}\PYG{p}{(}\PYG{n}{t}\PYG{p}{,}\PYG{n}{n\PYGZus{}batch}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} Iterate over the batches of time array}
+\PYG{k}{for} \PYG{n}{n}\PYG{p}{,}\PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{enumerate}\PYG{p}{(}\PYG{n}{t\PYGZus{}batch}\PYG{p}{):}
+    \PYG{c+c1}{\PYGZsh{} Inform start of Batch Computation}
+    \PYG{k}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Batch\PYGZdq{}}\PYG{p}{,(}\PYG{n}{n}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{),}\PYG{l+s+s2}{\PYGZdq{}Running...\PYGZdq{}}\PYG{p}{,}\PYG{n}{end}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}}\PYG{p}{)}
+    \PYG{c+c1}{\PYGZsh{} Re\PYGZhy{}adjusting edges}
+    \PYG{k}{if} \PYG{n}{n}\PYG{o}{\PYGZgt{}}\PYG{l+m+mi}{0}\PYG{p}{:}
+        \PYG{n}{i} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{i}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{o}{\PYGZhy{}}\PYG{n}{sim\PYGZus{}res}\PYG{p}{,}\PYG{n}{i}\PYG{p}{)}
+    \PYG{c+c1}{\PYGZsh{} Set state\PYGZus{}vector as the initial condition}
+    \PYG{n}{init\PYGZus{}state} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{constant}\PYG{p}{(}\PYG{n}{state\PYGZus{}vector}\PYG{p}{,} \PYG{n}{dtype}\PYG{o}{=}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{float64}\PYG{p}{)}
+    \PYG{c+c1}{\PYGZsh{} Create the Integrator computation graph}
+    \PYG{n}{tensor\PYGZus{}state} \PYG{o}{=} \PYG{n}{tf\PYGZus{}int}\PYG{o}{.}\PYG{n}{odeint}\PYG{p}{(}\PYG{n}{dXdt}\PYG{p}{,} \PYG{n}{init\PYGZus{}state}\PYG{p}{,} \PYG{n}{i}\PYG{p}{,} \PYG{n}{n\PYGZus{}n}\PYG{p}{,} \PYG{n}{F\PYGZus{}b}\PYG{p}{)}
+    \PYG{c+c1}{\PYGZsh{} Initialize variables and run session}
+    \PYG{k}{with} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{Session}\PYG{p}{()} \PYG{k}{as} \PYG{n}{sess}\PYG{p}{:}
+        \PYG{n}{tf}\PYG{o}{.}\PYG{n}{global\PYGZus{}variables\PYGZus{}initializer}\PYG{p}{()}\PYG{o}{.}\PYG{n}{run}\PYG{p}{()}
+        \PYG{n}{state} \PYG{o}{=} \PYG{n}{sess}\PYG{o}{.}\PYG{n}{run}\PYG{p}{(}\PYG{n}{tensor\PYGZus{}state}\PYG{p}{)}
+        \PYG{n}{sess}\PYG{o}{.}\PYG{n}{close}\PYG{p}{()}
+    \PYG{c+c1}{\PYGZsh{} Reset state\PYGZus{}vector as the last element of output}
+    \PYG{n}{state\PYGZus{}vector} \PYG{o}{=} \PYG{n}{state}\PYG{p}{[}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{,:]}
+    \PYG{c+c1}{\PYGZsh{} Save the output of the simulation to a binary file}
+    \PYG{n}{np}\PYG{o}{.}\PYG{n}{save}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}part\PYGZus{}\PYGZdq{}}\PYG{o}{+}\PYG{n+nb}{str}\PYG{p}{(}\PYG{n}{n}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{),}\PYG{n}{state}\PYG{p}{)}
+    \PYG{c+c1}{\PYGZsh{} Clear output}
+    \PYG{n}{state}\PYG{o}{=}\PYG{n+nb+bp}{None}
+    \PYG{k}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Finished\PYGZdq{}}\PYG{p}{)}
+\end{Verbatim}

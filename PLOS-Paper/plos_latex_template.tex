@@ -883,7 +883,7 @@ n_n = 3 # number of simultaneous neurons to simulate
 # Acetylcholine
 ach_mat = np.zeros((n_n,n_n))        # Ach Synapse Connectivity Matrix
 ach_mat[1,0]=1
-## PARAMETERS FOR ACETYLCHLOLINE SYNAPSES ##
+## Parameters for Acetylcholine synapses ##
 n_ach = int(np.sum(ach_mat))     # Number of Acetylcholine (Ach) Synapses 
 alp_ach = [10.0]*n_ach           # Alpha for Ach Synapse
 bet_ach = [0.2]*n_ach            # Beta for Ach Synapse
@@ -895,7 +895,7 @@ E_ach = [0.0]*n_n                    # Ach Potential
 # GABAa
 gaba_mat = np.zeros((n_n,n_n))       # GABAa Synapse Connectivity Matrix
 gaba_mat[2,1] = 1
-## PARAMETERS FOR GABAa SYNAPSES ##
+## Parameters for GABAa synapses ##
 n_gaba = int(np.sum(gaba_mat)) # Number of GABAa Synapses
 alp_gaba = [10.0]*n_gaba       # Alpha for GABAa Synapse
 bet_gaba = [0.16]*n_gaba       # Beta for GABAa Synapse
@@ -903,16 +903,378 @@ V0 = [-20.0]*n_n                     # Decay Potential
 sigma = [1.5]*n_n                    # Decay Time Constant
 g_gaba = [0.8]*n_n                  # fGABA Conductance
 E_gaba = [-70.0]*n_n                # fGABA Potential
-
 ## Storing Firing Thresholds ##
 F_b = [0.0]*n_n                      # Fire threshold
+## Store our input to each neuron as a n x timesteps matrix
+## called current_input, and extract value at each timepoint
+def I_inj_t(t):
+    # Turn indices to integer and extract from matrix
+    index = tf.cast(t/epsilon,tf.int32)
+    return tf.constant(current_input.T,dtype=tf.float64)[index] 
 \end{minted}
 
+\subsection*{Working with Sparse<->Dense Dynamics}
 
-\begin{eqnarray}\end{eqnarray}
+For performing the dynamical updates for the synapses, we need only as many variables as the number of synapse x number of equations required for each synapse. Here our synapse models require only one dynamical variable ie. open fraction [O] which we will store as an k-vector where k is the number of synapses.
+
+We will need to work with this [O] vector on two seperate instances and each time we will have to go to a dense form to speed up computation.
+
+\subsection*{A. Calculation of Synaptic Currents}
+
+The formula for $I_{syn}$ is given by:
+
+\begin{eqnarray}I_{syn} = \sum_{presynaptic} g_{syn}[O](V-E_{syn})\end{eqnarray}
+
+The best way to represent this calculation is to use the connectivity matrix $\mathbf{C}$ for the synapses and the open fraction vector $\vec{[O]}$ to create an open fraction matrix $\mathbf{O}$ and perform the following computations.
+
+\begin{eqnarray}
+\mathbf{C}=
+\begin{bmatrix}
+0&1&...&0\\
+0&0&...&1\\
+...&...&...&1\\
+1&0&0&0
+\end{bmatrix}
+\end{eqnarray}
+
+\begin{eqnarray}vec{[O]}=[O_1,O_2...O_k]\end{eqnarray}
+
+\begin{eqnarray}
+\mathbf{O}=
+\begin{bmatrix}
+0&O_1&...&0\\
+0&0&...&O_a\\
+...&...&...&O_b\\
+O_k&0&0&0
+\end{bmatrix}
+\end{eqnarray}
+
+\begin{eqnarray}\vec{[I_{syn}]}=\sum_{columns}\mathbf{O}\diamond(\vec{g}_{syn}\odot(\vec{V}-\vec{E}_{syn}))\end{eqnarray}
+
+where $\diamond$ is columnwise multiplication and $\odot$ is elementwise multiplication. $\vec{[I_{syn}]}$ is now the total synaptic current input to the each of the neurons.
+
+\subsubsection*{Algorithm for Synaptic Currents}
+
+\begin{enumerate}
+\item Firstly we need to convert from the sparse $[O]$ vector to the dense $\mathbf{O}$ matrix. TensorFlow does not allow to make changes to a defined tensor directly, thus we create a $n^{2}$ vector TensorFlow variable o\_ which we will later reshape to a $n\times n$ matrix.
+\item We then flatten the synaptic connectivity matrix and find the indices where there is a connection. For this we use the boolean mask function to choose the correct k (total number of synapses) indices from the range $1$ to $n^2$ and store in the variable ind.
+\item Using the scatter\_update function of TensorFlow, we fill the correct indices of the variable o\_ that we created with the values of open fraction from the $[O]$ vector.
+\item We now reshape the vector as a $n\times n$ matrix. Since python stores matrices as array of arrays, with each row as an inner array, for performing columnswise multiplication, the easiest way is to tranpose the matrix, so that each column is the inner array, perform element wise multiplication with each inner array and apply transpose again.
+\item Finally using reduce\_sum, we sum over the columns to get our $I_{syn}$ vector.
+\end{enumerate}
 
 \begin{minted}[linenos]{python}
+## Acetylcholine Synaptic Current ##
+def I_ach(o,V):
+    o_ = tf.Variable([0.0]*n_n**2,dtype=tf.float64)
+    ind = tf.boolean_mask(tf.range(n_n**2),ach_mat.reshape(-1) == 1)
+    o_ = tf.scatter_update(o_,ind,o)
+    o_ = tf.transpose(tf.reshape(o_,(n_n,n_n)))
+    return tf.reduce_sum(tf.transpose((o_*(V-E_ach))*g_ach),1)
+## GABAa Synaptic Current ##
+def I_gaba(o,V):
+    o_ = tf.Variable([0.0]*n_n**2,dtype=tf.float64)
+    ind = tf.boolean_mask(tf.range(n_n**2),gaba_mat.reshape(-1) == 1)
+    o_ = tf.scatter_update(o_,ind,o)
+    o_ = tf.transpose(tf.reshape(o_,(n_n,n_n)))
+    return tf.reduce_sum(tf.transpose((o_*(V-E_gaba))*g_gaba),1)
+## Other Currents remain the same ##
 \end{minted}
+
+\subsection*{B. Updation of Synaptic Variables}
+
+For the updation, the first we need to calculate the values of the presynaptic activation [T] for both types of synapses. We will essentially calculate this for each neuron and then redirect the values to the correct post synaptic neuron. Recall:
+
+\begin{eqnarray}[T]_{ach} = A\ \Theta(t_{max}+t_{fire}+t_{delay}-t)\ \Theta(t-t_{fire}-t_{delay})\end{eqnarray}
+\begin{eqnarray}[T]_{gaba} = \frac{1}{1+e^{-\frac{V(t)-V_0}{\sigma}}}\end{eqnarray}
+
+Thus $[T]_{ach}$ is function of the last firing time, and $[T]_{gaba}$ depends on the presynaptic voltage. Once we calculate the values of [T]-vector for both types of synapse, we need to redirect them to the correct synapses in a sparse $k\times1$ vector form. 
+
+\subsubsection*{Algorithm for Dynamics}
+
+\begin{enumerate}
+\item  For $[T]_{ach}$, use a boolean logical\_and function to check is the current timepoint t is greater than the last fire time (fire\_t) + delay (t\_delay) and less than last fire time (fire\_t) + delay (t\_delay) + activation length (t\_max) for each neuron as a vector. Use the result of these boolean operations to choose between zero or an constant A. This serves as the heaviside step function. For $[T]_{gaba}$, simply use the V vector to determine T.
+\item For making the sparse vector, we follow as two step process. First we multiply each row of the connectivity matrices $\mathbf{C}$ with the respective $[T]$ vector to get a activation matrix $\mathbf{T}$, and then we just flatten $\mathbf{T}$ and $\mathbf{C}$ and, using tf.boolean\_mask, remove all the zeros from $\mathbf{T}$ to get a $k\times1$ vector which now stores the presynaptic activation for each of the synapses where $k=n_{gaba}$ or $n_{ach}$.
+\item Calculate the differential change in the open fractions (OF) using the $k\times1$ vector.
+\end{enumerate}
+
+\begin{minted}[linenos]{python}
+def dXdt(X, t):
+    V = X[:1*n_n]       # First n_n: Membrane Voltage
+    m = X[1*n_n:2*n_n]  # Next n_n: Sodium Activation Gating
+    h = X[2*n_n:3*n_n]  # Next n_n: Sodium Inactivation Gating
+    n = X[3*n_n:4*n_n]  # Next n_n: Potassium Gating
+    # Next n_ach and n_gaba: Ach and GABAa Open Fraction respectively
+    o_ach = X[4*n_n : 4*n_n + n_ach]
+    o_gaba = X[4*n_n + n_ach : 4*n_n + n_ach + n_gaba] 
+    fire_t = X[-n_n:]   # Last n_n: last fire times
+    dVdt = (I_inj_t(t)-I_Na(V, m, h)-I_K(V, n)-
+    		I_L(V)-I_ach(o_ach,V)-I_gaba(o_gaba,V))/C_m 
+    ## Updation for gating variables ##
+    m0,tm,h0,th = Na_prop(V)
+    n0,tn = K_prop(V)
+    dmdt = - (1.0/tm)*(m-m0)
+    dhdt = - (1.0/th)*(h-h0)
+    dndt = - (1.0/tn)*(n-n0)
+    ## Updation for o_ach ##
+    A_ = tf.constant(A,dtype=tf.float64)
+    Z_ = tf.zeros(tf.shape(A_),dtype=tf.float64)
+    T_ach = tf.where(tf.logical_and(tf.greater(t,fire_t+t_delay),
+    			tf.less(t,fire_t+t_max+t_delay)),A_,Z_) 
+    T_ach = tf.multiply(tf.constant(ach_mat,dtype=tf.float64),T_ach)
+    T_ach = tf.boolean_mask(tf.reshape(T_ach,(-1,)),
+    			ach_mat.reshape(-1) == 1)
+    do_achdt = alp_ach*(1.0-o_ach)*T_ach - bet_ach*o_ach
+    ## Updation for o_gaba ##
+    T_gaba = 1.0/(1.0+tf.exp(-(V-V0)/sigma))
+    T_gaba = tf.multiply(tf.constant(gaba_mat,dtype=tf.float64),T_gaba)
+    T_gaba = tf.boolean_mask(tf.reshape(T_gaba,(-1,)),
+    			gaba_mat.reshape(-1) == 1)
+    do_gabadt = alp_gaba*(1.0-o_gaba)*T_gaba - bet_gaba*o_gaba
+    ## Updation for fire times ##
+    dfdt = tf.zeros(tf.shape(fire_t),dtype=fire_t.dtype) # no change
+    out = tf.concat([dVdt,dmdt,dhdt,dndt,do_achdt,do_gabadt,dfdt],0)
+    return out
+\end{minted}
+
+\subsection*{Defining the Gating Variable Updation Function and the Initial Conditions}
+
+Like earlier, we again define the function that returns us the values of $\tau_m$, $\tau_h$, $\tau_n$, $m_0$, $h_0$, $n_0$ and we prepare the parameters and initial conditions. 
+
+Note: If we initialize the last firing time as 0, then the second neuron $X_2$ will get an EPSP immediately after the start of the simulation. To avoid this the last firing time should be initialized to a large negative number >= the length of the simulation.
+
+\begin{minted}[linenos]{python}
+# The initialization of the Parameters and Gating Variable
+# Updation Function remain the same.
+
+# Initialize the State Vector
+y0 = tf.constant([-71]*n_n+[0,0,0]*n_n+[0]*n_ach+[0]*n_gaba+
+				[-9999999]*n_n,dtype=tf.float64)
+\end{minted}
+
+\subsection*{Creating the Current Input and Run the Simulation}
+
+We will run an 700 ms simulation with 100ms current injection at neuron $X_1$ of increasing amplitude with 100ms gaps in between.
+
+\begin{minted}[linenos]{python}
+current_input= np.zeros((n_n,t.shape[0]))
+current_input[0,int(100/epsilon):int(200/epsilon)] = 2.5
+current_input[0,int(300/epsilon):int(400/epsilon)] = 5.0
+current_input[0,int(500/epsilon):int(600/epsilon)] = 7.5
+state = odeint(dXdt,y0,t,n_n,F_b)
+with tf.Session() as sess:
+    # Since we are using variables we have to initialize them
+    tf.global_variables_initializer().run()
+    state = sess.run(state)
+\end{minted}
+
+The output is plotted in Fig.
+
+We can see that the current injection triggers the firing of action potentials with increasing frequency with increasing current. Also we see that as soon as the first neuron $X_1$ crosses its fireing threshold, an EPSP is triggered in the next neuron $X_2$ causing a firing with a slight delay from the firing of $X_1$. Finally, as the second neuron depolarizes, we see a corresponding hyperpolarization in the next neuron $X_3$ caused by an IPSP. We can also plot the dynamics of the channels itself by plotting o\_ach and o\_gaba which are the 5th and 4th last elements respectively (Fig). Thus we are now capable of making complex networks of neurons with both excitatory and inhibitory connections.
+
+\section*{Day 5: Optimal Mind Control}
+Now that we can simulate a model of a network of conductance-based neurons, we discuss the limitations of our algorithm and try to find solutions to the problems.
+
+\subsection*{Memory Management}
+
+This TensorFlow implementation allows us to make our simulation code not only easier to read but also makes it highly parallizable and scalable across a variety of computational devices. But there are some major limitations to our system. The biggest of these issues is that despite making the simulation faster, this implementation makes it very memory intensive.
+
+The iterators in TensorFlow do not follow the normal process of Memory Allocation and Garbage Collection. Since, TensorFlow is designed to work on sophisticated hardware like GPUs, TPUs and distributed platforms, the memory allocation is done during TensorFlow session adaptively, but the memory is NOT cleared until the python kernel has stopped execution. 
+
+The memory used increases linearly with time as the state matrix is computed recursively by the Scan function. The maximum memory used by the computational graph is 2 times the total state matrix size at the point when the computation finishes and copies the final data into the memory. Larger and more complicated the network and longer the simulation, larger the matrix and then, each run is limited by the total available memory. As we increase the number of neurons (n) and scale the degree distributions, the size of the memory used grows ~$O(n^2)$ as the number of differential equations grows as a square of the number of neurons. Similarly, as we increase the length of the simulation(L), the memory used grows $O(L)$. Which is why for a system with a limited memory of K bytes, The length of a given simulation (L timesteps) of a given network (N differential equations) with 64-bit floating-point precision will follow: 
+
+\begin{eqnarray}2\times64\times L\times N=K\end{eqnarray}
+
+That is, for any given network, our maximum simulation length is limited. One way to improve our maximum length is to divide the simulation into smaller batches. There will be a small queuing time between batches, which will slow down our code by a small amount but we will be able to simulate longer times. Thus, if we split the simulation into K sequential batches, the maximum memory for the simulation becomes $(1+\frac{1}{K})$ times the total matrix size. Thus the memory relation becomes:  
+
+\begin{eqnarray}\Big(1+\frac{1}{K}\Big)\times64\times L\times N=K\end{eqnarray}
+
+This way, we can maximize the length of out simulation that we can run in a single python kernel.
+
+Let us implement this batch system for our 3 neuron feed-forward model.
+
+\subsection*{Implementing the Model}
+
+To improve out readability and make our code more modular we seperate the integrator into a independent import module. Take the integrator code that we developed in the last day and place it in a file called "tf\_integrator.py". Make sure the file is present in the same directory as the implementation of the model. 
+
+Note: If you are using Jupyter Notebook, remember to remove the \%matplotlib inline command as it is specific to jupyter.
+
+\subsubsection*{Importing tf\_integrator and other requirements}
+
+Once the Integrator is saved in tf\_integrator.py in the same directory as the Notebook, we can start importing the essentials including the integrator.
+
+\begin{minted}[linenos]{python}
+import tensorflow as tf
+import numpy as np
+import tf_integrator as tf_int
+import matplotlib.pyplot as plt
+import seaborn as sns
+\end{minted}
+
+For implementing a Batch system, we do not need to change how we construct our model only how we execute it.
+
+\subsubsection*{Splitting Time Series into independent batches and Run Each Batch Sequentially}
+
+Since we will be dividing the computation into batches, we have to split the time array into batches which will be passed to the each successive call to the integrator. For each new call, the last state vector of the last call will be the new initial condition. 
+
+In np.array\_split(), the split edges are present in only one array and since our initial vector to successive calls is corresponding to the last output our first element in the later time array should be the last element of the previous output series. Thus, we append the last time to the beginning of the current time array batch.
+
+\begin{minted}[linenos]{python}
+# Define the Number of Batches
+n_batch = 2
+# Split t array into batches using numpy
+t_batch = np.array_split(t,n_batch)
+# Iterate over the batches of time array
+for n,i in enumerate(t_batch):
+    # Inform start of Batch Computation
+    print("Batch",(n+1),"Running...",end="")
+    # Re-adjusting edges
+    if n>0:
+        i = np.append(i[0]-sim_res,i)
+    # Set state_vector as the initial condition
+    init_state = tf.constant(state_vector, dtype=tf.float64)
+    # Create the Integrator computation graph
+    tensor_state = tf_int.odeint(dXdt, init_state, i, n_n, F_b)
+    # Initialize variables and run session
+    with tf.Session() as sess:
+        tf.global_variables_initializer().run()
+        state = sess.run(tensor_state)
+        sess.close()
+    # Reset state_vector as the last element of output
+    state_vector = state[-1,:]
+    # Save the output of the simulation to a binary file
+    np.save("part_"+str(n+1),state)
+    # Clear output
+    state=None
+    print("Finished")
+\end{minted}
+
+\subsubsection*{Putting the Output Together}
+
+The output from our batch implementation is a set of binary files that store subparts of our total simulation. To get the overall output we have to stitch them back together.
+
+\begin{minted}[linenos]{python}
+overall_state = []
+# Iterate over the generated output files
+for n,i in enumerate(["part_"+str(n+1)+".npy" for n in range(n_batch)]):
+    # Since the first element in the series was the last output, 
+    # we remove them
+    if n>0:
+        overall_state.append(np.load(i)[1:,:])
+    else:
+        overall_state.append(np.load(i))
+# Concatenate all the matrix to get a single state matrix
+overall_state = np.concatenate(overall_state)
+\end{minted}
+
+By this method, we have maximized the usage of our available memory but we can go further and develop a method to allow indefinitely long simulation. The issue behind this entire algorithm is that the memory is not cleared until the python kernel finishes. One way to overcome this is to save the parameters of the model (such as connectivity matrix) and the state vector in a file, and start a new python kernel from a python script to compute successive batches. This way after each large batch, the memory gets cleaned. By combining the previous batch implementation and this system, we can maximize our computability.
+
+\subsection*{Implementing a Runner and a Caller}
+
+Firstly, we have to create an implementation of the model that takes in previous input as current parameters. Thus, we create a file, which we call "run.py" that takes an argument ie. the current batch number. The implementation for "run.py" is mostly same as the above model but there is a small difference.
+
+When the batch number is 0, we initialize all variable parameters and save them, but otherwise we use the saved values. The parameters we save include: Acetylcholine Matrix, GABAa Matrix and Final/Initial State Vector. It will also save the files with both batch number and sub-batch number listed.
+
+The time series will be created and split initially by the caller, which we call "call.py", and stored in a file. Each execution of the Runner will extract its relevant time series and compute on it.
+
+\subsubsection*{Implementing the Caller code}
+
+The caller will create the time series, split it and use python subprocess module to call "run.py" with appropriate arguments. The code for "call.py" is given below.
+
+\begin{minted}[linenos]{python}
+from subprocess import call
+import numpy as np
+total_time = 1000
+n_splits = 2
+time = np.split(np.arange(0,total_time,0.01),n_splits)
+# Append the last time point to the beginning of the next batch
+for n,i in enumerate(time):
+    if n>0:
+        time[n] = np.append(i[0]-0.01,i)
+np.save("time",time)
+# call successive batches with a new python subprocess 
+# and pass the batch number
+for i in range(n_splits):
+    call(['python','run.py',str(i)])
+print("Simulation Completed.")
+\end{minted}
+
+\subsubsection*{Implementing the Runner code}
+
+"run.py" is essentially identical to the batch-implemented model we developed earlier with the changes described below:
+
+\begin{minted}[linenos]{python}
+# Additional Imports #
+import sys
+# Duration of Simulation #
+# Replace t = np.arange(0,sim_time,sim_res) by
+t = np.load("time.npy")[int(sys.argv[1])] # get first argument to run.py
+# Connectivity Matrix Definitions #
+if sys.argv[1] == '0':
+    ach_mat = np.zeros((n_n,n_n)) # Ach Synapse Connectivity Matrix
+    ach_mat[1,0]=1
+    # If connectivity is random, once initialized it will be the same.
+    np.save("ach_mat",ach_mat)
+else:
+    ach_mat = np.load("ach_mat.npy")
+if sys.argv[1] == '0':
+    gaba_mat = np.zeros((n_n,n_n)) # GABAa Synapse Connectivity Matrix
+    gaba_mat[2,1] = 1
+    # If connectivity is random, once initialized it will be the same.
+    np.save("gaba_mat",gaba_mat)
+else:
+    gaba_mat = np.load("gaba_mat.npy")
+# Current Input Definition #
+if sys.argv[1] == '0':
+    current_input= np.zeros((n_n,int(sim_time/sim_res)))
+    current_input[0,int(100/sim_res):int(200/sim_res)] = 2.5
+    current_input[0,int(300/sim_res):int(400/sim_res)] = 5.0
+    current_input[0,int(500/sim_res):int(600/sim_res)] = 7.5
+    np.save("current_input",current_input)
+else:
+    current_input = np.load("current_input.npy")
+# State Vector Definition #
+if sys.argv[1] == '0':
+    state_vector = [-71]*n_n+[0,0,0]*n_n+[0]*n_ach+[0]*n_gaba
+    						+[-9999999]*n_n
+    state_vector = np.array(state_vector)
+    state_vector = state_vector + 0.01*state_vector
+    			*np.random.normal(size=state_vector.shape)
+    np.save("state_vector",state_vector)
+else:
+    state_vector = np.load("state_vector.npy")
+# Saving of Output #
+# Replace np.save("part_"+str(n+1),state) by
+np.save("batch"+str(int(sys.argv[1])+1)+"_part_"+str(n+1),state)
+\end{minted}
+
+\subsubsection*{Combining all Data}
+Just like we merged all the batches, we merge all the sub-batches and batches.
+
+\begin{minted}[linenos]{python}
+overall_state = []
+# Iterate over the generated output files
+for n,i in enumerate(["batch"+str(x+1) for x in range(n_splits)]):
+    for m,j in enumerate(["_part_"+str(x+1) for x in range(n_batch)]):
+        # Since the first element in the series was the last output, 
+        # we remove them
+        if n>0 and m>0:
+            overall_state.append(np.load(i+j+".npy")[1:,:])
+        else:
+            overall_state.append(np.load(i+j+".npy"))
+# Concatenate all the matrix to get a single state matrix
+overall_state = np.concatenate(overall_state)
+\end{minted}
+
+\subsection*{Other Limitations}
+
+With the runner-caller implementation, we have solved the issue of memory limitation. But there are some issues we havent solved yet.
+
+1. \textbf{Delay Dependent Activity:} If the implementation of an model requires a delay differential equation (DDEs) that accesses the value of the parameters at a earlier time, we cannot use this programming paradigm directly as it has only, at most, one timestep memory. This is also a limitation of using the scan function. Exploring alternatives to tf.scan() and other techniques of solving DDEs is an option.
+
+2. \textbf{Optimal Distributed Computing:} To maximize the utility of distributed systems, the algorithm needs to be capable of splitting the computation into tasks that can be run parallely (simultaneously) in different computational units. Since we are working with numerical integration, the results of the last step need to be known to perform the next computation. This, in a way limits out ability to use distributed computing. TensorFlow automatically tries to utilize all available resources efficiently but it may not be the optimal usage. One way to enforce distribution is to manually distribute parts of the computational graph to specialized computing units. For example, the actual session can be forced to be executed on the server with maximum memory but the sub-computations such as the RK4 integration steps can be distributed to servers with more GPUs.
+
+
 
 
 
@@ -959,7 +1321,7 @@ F_b = [0.0]*n_n                      # Fire threshold
 {\bf Bold the title sentence.} Add descriptive text after the title of the item (optional).
 
 \section*{Acknowledgments}
-Cras egestas velit mauris, eu mollis turpis pellentesque sit amet. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nam id pretium nisi. Sed ac quam id nisi malesuada congue. Sed interdum aliquet augue, at pellentesque quam rhoncus vitae.
+
 
 \nolinenumbers
 

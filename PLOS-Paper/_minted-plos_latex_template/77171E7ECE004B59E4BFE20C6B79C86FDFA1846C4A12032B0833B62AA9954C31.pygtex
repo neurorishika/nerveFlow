@@ -1,0 +1,44 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Additional Imports \PYGZsh{}}
+\PYG{k+kn}{import} \PYG{n+nn}{sys}
+\PYG{c+c1}{\PYGZsh{} Duration of Simulation \PYGZsh{}}
+\PYG{c+c1}{\PYGZsh{} Replace t = np.arange(0,sim\PYGZus{}time,sim\PYGZus{}res) by}
+\PYG{n}{t} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{load}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}time.npy\PYGZdq{}}\PYG{p}{)[}\PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{sys}\PYG{o}{.}\PYG{n}{argv}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{])]} \PYG{c+c1}{\PYGZsh{} get first argument to run.py}
+\PYG{c+c1}{\PYGZsh{} Connectivity Matrix Definitions \PYGZsh{}}
+\PYG{k}{if} \PYG{n}{sys}\PYG{o}{.}\PYG{n}{argv}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{==} \PYG{l+s+s1}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{:}
+    \PYG{n}{ach\PYGZus{}mat} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{zeros}\PYG{p}{((}\PYG{n}{n\PYGZus{}n}\PYG{p}{,}\PYG{n}{n\PYGZus{}n}\PYG{p}{))} \PYG{c+c1}{\PYGZsh{} Ach Synapse Connectivity Matrix}
+    \PYG{n}{ach\PYGZus{}mat}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{o}{=}\PYG{l+m+mi}{1}
+    \PYG{c+c1}{\PYGZsh{} If connectivity is random, once initialized it will be the same.}
+    \PYG{n}{np}\PYG{o}{.}\PYG{n}{save}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}ach\PYGZus{}mat\PYGZdq{}}\PYG{p}{,}\PYG{n}{ach\PYGZus{}mat}\PYG{p}{)}
+\PYG{k}{else}\PYG{p}{:}
+    \PYG{n}{ach\PYGZus{}mat} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{load}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}ach\PYGZus{}mat.npy\PYGZdq{}}\PYG{p}{)}
+\PYG{k}{if} \PYG{n}{sys}\PYG{o}{.}\PYG{n}{argv}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{==} \PYG{l+s+s1}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{:}
+    \PYG{n}{gaba\PYGZus{}mat} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{zeros}\PYG{p}{((}\PYG{n}{n\PYGZus{}n}\PYG{p}{,}\PYG{n}{n\PYGZus{}n}\PYG{p}{))} \PYG{c+c1}{\PYGZsh{} GABAa Synapse Connectivity Matrix}
+    \PYG{n}{gaba\PYGZus{}mat}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{l+m+mi}{1}
+    \PYG{c+c1}{\PYGZsh{} If connectivity is random, once initialized it will be the same.}
+    \PYG{n}{np}\PYG{o}{.}\PYG{n}{save}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}gaba\PYGZus{}mat\PYGZdq{}}\PYG{p}{,}\PYG{n}{gaba\PYGZus{}mat}\PYG{p}{)}
+\PYG{k}{else}\PYG{p}{:}
+    \PYG{n}{gaba\PYGZus{}mat} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{load}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}gaba\PYGZus{}mat.npy\PYGZdq{}}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} Current Input Definition \PYGZsh{}}
+\PYG{k}{if} \PYG{n}{sys}\PYG{o}{.}\PYG{n}{argv}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{==} \PYG{l+s+s1}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{:}
+    \PYG{n}{current\PYGZus{}input}\PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{zeros}\PYG{p}{((}\PYG{n}{n\PYGZus{}n}\PYG{p}{,}\PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{sim\PYGZus{}time}\PYG{o}{/}\PYG{n}{sim\PYGZus{}res}\PYG{p}{)))}
+    \PYG{n}{current\PYGZus{}input}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{n+nb}{int}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{o}{/}\PYG{n}{sim\PYGZus{}res}\PYG{p}{):}\PYG{n+nb}{int}\PYG{p}{(}\PYG{l+m+mi}{200}\PYG{o}{/}\PYG{n}{sim\PYGZus{}res}\PYG{p}{)]} \PYG{o}{=} \PYG{l+m+mf}{2.5}
+    \PYG{n}{current\PYGZus{}input}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{n+nb}{int}\PYG{p}{(}\PYG{l+m+mi}{300}\PYG{o}{/}\PYG{n}{sim\PYGZus{}res}\PYG{p}{):}\PYG{n+nb}{int}\PYG{p}{(}\PYG{l+m+mi}{400}\PYG{o}{/}\PYG{n}{sim\PYGZus{}res}\PYG{p}{)]} \PYG{o}{=} \PYG{l+m+mf}{5.0}
+    \PYG{n}{current\PYGZus{}input}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{n+nb}{int}\PYG{p}{(}\PYG{l+m+mi}{500}\PYG{o}{/}\PYG{n}{sim\PYGZus{}res}\PYG{p}{):}\PYG{n+nb}{int}\PYG{p}{(}\PYG{l+m+mi}{600}\PYG{o}{/}\PYG{n}{sim\PYGZus{}res}\PYG{p}{)]} \PYG{o}{=} \PYG{l+m+mf}{7.5}
+    \PYG{n}{np}\PYG{o}{.}\PYG{n}{save}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}current\PYGZus{}input\PYGZdq{}}\PYG{p}{,}\PYG{n}{current\PYGZus{}input}\PYG{p}{)}
+\PYG{k}{else}\PYG{p}{:}
+    \PYG{n}{current\PYGZus{}input} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{load}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}current\PYGZus{}input.npy\PYGZdq{}}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} State Vector Definition \PYGZsh{}}
+\PYG{k}{if} \PYG{n}{sys}\PYG{o}{.}\PYG{n}{argv}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{==} \PYG{l+s+s1}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{:}
+    \PYG{n}{state\PYGZus{}vector} \PYG{o}{=} \PYG{p}{[}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{71}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}\PYG{o}{+}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}\PYG{o}{+}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}ach}\PYG{o}{+}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}gaba}
+    						\PYG{o}{+}\PYG{p}{[}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{9999999}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}
+    \PYG{n}{state\PYGZus{}vector} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{(}\PYG{n}{state\PYGZus{}vector}\PYG{p}{)}
+    \PYG{n}{state\PYGZus{}vector} \PYG{o}{=} \PYG{n}{state\PYGZus{}vector} \PYG{o}{+} \PYG{l+m+mf}{0.01}\PYG{o}{*}\PYG{n}{state\PYGZus{}vector}
+    			\PYG{o}{*}\PYG{n}{np}\PYG{o}{.}\PYG{n}{random}\PYG{o}{.}\PYG{n}{normal}\PYG{p}{(}\PYG{n}{size}\PYG{o}{=}\PYG{n}{state\PYGZus{}vector}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{)}
+    \PYG{n}{np}\PYG{o}{.}\PYG{n}{save}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}state\PYGZus{}vector\PYGZdq{}}\PYG{p}{,}\PYG{n}{state\PYGZus{}vector}\PYG{p}{)}
+\PYG{k}{else}\PYG{p}{:}
+    \PYG{n}{state\PYGZus{}vector} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{load}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}state\PYGZus{}vector.npy\PYGZdq{}}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} Saving of Output \PYGZsh{}}
+\PYG{c+c1}{\PYGZsh{} Replace np.save(\PYGZdq{}part\PYGZus{}\PYGZdq{}+str(n+1),state) by}
+\PYG{n}{np}\PYG{o}{.}\PYG{n}{save}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}batch\PYGZdq{}}\PYG{o}{+}\PYG{n+nb}{str}\PYG{p}{(}\PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{sys}\PYG{o}{.}\PYG{n}{argv}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{])}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{o}{+}\PYG{l+s+s2}{\PYGZdq{}\PYGZus{}part\PYGZus{}\PYGZdq{}}\PYG{o}{+}\PYG{n+nb}{str}\PYG{p}{(}\PYG{n}{n}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{),}\PYG{n}{state}\PYG{p}{)}
+\end{Verbatim}

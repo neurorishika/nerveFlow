@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} The initialization of the Parameters and Gating Variable}
+\PYG{c+c1}{\PYGZsh{} Updation Function remain the same.}
+
+\PYG{c+c1}{\PYGZsh{} Initialize the State Vector}
+\PYG{n}{y0} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{constant}\PYG{p}{([}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{71}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}\PYG{o}{+}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}\PYG{o}{+}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}ach}\PYG{o}{+}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}gaba}\PYG{o}{+}
+				\PYG{p}{[}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{9999999}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}\PYG{p}{,}\PYG{n}{dtype}\PYG{o}{=}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{float64}\PYG{p}{)}
+\end{Verbatim}

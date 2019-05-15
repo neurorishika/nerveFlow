@@ -1,0 +1,11 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{current\PYGZus{}input}\PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{zeros}\PYG{p}{((}\PYG{n}{n\PYGZus{}n}\PYG{p}{,}\PYG{n}{t}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]))}
+\PYG{n}{current\PYGZus{}input}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{n+nb}{int}\PYG{p}{(}\PYG{l+m+mi}{100}\PYG{o}{/}\PYG{n}{epsilon}\PYG{p}{):}\PYG{n+nb}{int}\PYG{p}{(}\PYG{l+m+mi}{200}\PYG{o}{/}\PYG{n}{epsilon}\PYG{p}{)]} \PYG{o}{=} \PYG{l+m+mf}{2.5}
+\PYG{n}{current\PYGZus{}input}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{n+nb}{int}\PYG{p}{(}\PYG{l+m+mi}{300}\PYG{o}{/}\PYG{n}{epsilon}\PYG{p}{):}\PYG{n+nb}{int}\PYG{p}{(}\PYG{l+m+mi}{400}\PYG{o}{/}\PYG{n}{epsilon}\PYG{p}{)]} \PYG{o}{=} \PYG{l+m+mf}{5.0}
+\PYG{n}{current\PYGZus{}input}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{n+nb}{int}\PYG{p}{(}\PYG{l+m+mi}{500}\PYG{o}{/}\PYG{n}{epsilon}\PYG{p}{):}\PYG{n+nb}{int}\PYG{p}{(}\PYG{l+m+mi}{600}\PYG{o}{/}\PYG{n}{epsilon}\PYG{p}{)]} \PYG{o}{=} \PYG{l+m+mf}{7.5}
+\PYG{n}{state} \PYG{o}{=} \PYG{n}{odeint}\PYG{p}{(}\PYG{n}{dXdt}\PYG{p}{,}\PYG{n}{y0}\PYG{p}{,}\PYG{n}{t}\PYG{p}{,}\PYG{n}{n\PYGZus{}n}\PYG{p}{,}\PYG{n}{F\PYGZus{}b}\PYG{p}{)}
+\PYG{k}{with} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{Session}\PYG{p}{()} \PYG{k}{as} \PYG{n}{sess}\PYG{p}{:}
+    \PYG{c+c1}{\PYGZsh{} Since we are using variables we have to initialize them}
+    \PYG{n}{tf}\PYG{o}{.}\PYG{n}{global\PYGZus{}variables\PYGZus{}initializer}\PYG{p}{()}\PYG{o}{.}\PYG{n}{run}\PYG{p}{()}
+    \PYG{n}{state} \PYG{o}{=} \PYG{n}{sess}\PYG{o}{.}\PYG{n}{run}\PYG{p}{(}\PYG{n}{state}\PYG{p}{)}
+\end{Verbatim}
