@@ -1,36 +1,34 @@
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{c+c1}{\PYGZsh{} Firstly, import TensorFlow}
-\PYG{k+kn}{import} \PYG{n+nn}{tensorflow} \PYG{k+kn}{as} \PYG{n+nn}{tf}
-
+\PYG{k}{def} \PYG{n+nf}{tf\PYGZus{}check\PYGZus{}type}\PYG{p}{(}\PYG{n}{t}\PYG{p}{,} \PYG{n}{y0}\PYG{p}{):} \PYG{c+c1}{\PYGZsh{} Ensure Input is Correct}
+    \PYG{k}{if} \PYG{o+ow}{not} \PYG{p}{(}\PYG{n}{y0}\PYG{o}{.}\PYG{n}{dtype}\PYG{o}{.}\PYG{n}{is\PYGZus{}floating} \PYG{o+ow}{and} \PYG{n}{t}\PYG{o}{.}\PYG{n}{dtype}\PYG{o}{.}\PYG{n}{is\PYGZus{}floating}\PYG{p}{):}
+        \PYG{c+c1}{\PYGZsh{} The datatype of any tensor t is accessed by t.dtype}
+        \PYG{k}{raise} \PYG{n+ne}{TypeError}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}Error in Datatype\PYGZsq{}}\PYG{p}{)}
 \PYG{k}{class} \PYG{n+nc}{\PYGZus{}Tf\PYGZus{}Integrator}\PYG{p}{():}
     \PYG{k}{def} \PYG{n+nf}{integrate}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{,} \PYG{n}{func}\PYG{p}{,} \PYG{n}{y0}\PYG{p}{,} \PYG{n}{t}\PYG{p}{):}
         \PYG{n}{time\PYGZus{}delta\PYGZus{}grid} \PYG{o}{=} \PYG{n}{t}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{:]} \PYG{o}{\PYGZhy{}} \PYG{n}{t}\PYG{p}{[:}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{]}
-        \PYG{c+c1}{\PYGZsh{} tf.scan(fn,el,init) is an iterator over elems, it}
-        \PYG{c+c1}{\PYGZsh{} applies fn recursively  on tensor init fn is function}
-        \PYG{c+c1}{\PYGZsh{} takes in two inputs: accumulated fn and the value of}
-        \PYG{c+c1}{\PYGZsh{} current iteration on el}
-        \PYG{n}{y} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{scan}\PYG{p}{(}\PYG{n}{scan\PYGZus{}func}\PYG{p}{,} \PYG{p}{(}\PYG{n}{t}\PYG{p}{[:}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{],} \PYG{n}{time\PYGZus{}delta\PYGZus{}grid}\PYG{p}{),}\PYG{n}{y0}\PYG{p}{)}
-        \PYG{k}{return} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{concat}\PYG{p}{([[}\PYG{n}{y0}\PYG{p}{],} \PYG{n}{y}\PYG{p}{],} \PYG{n}{axis}\PYG{o}{=}\PYG{l+m+mi}{0}\PYG{p}{)}
-
-    \PYG{c+c1}{\PYGZsh{} Create and return a stepper function fn}
-    \PYG{k}{def} \PYG{n+nf}{\PYGZus{}make\PYGZus{}scan\PYGZus{}func}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{,} \PYG{n}{func}\PYG{p}{):}
         \PYG{k}{def} \PYG{n+nf}{scan\PYGZus{}func}\PYG{p}{(}\PYG{n}{y}\PYG{p}{,} \PYG{n}{t\PYGZus{}dt}\PYG{p}{):}
             \PYG{n}{t}\PYG{p}{,} \PYG{n}{dt} \PYG{o}{=} \PYG{n}{t\PYGZus{}dt}
             \PYG{n}{dy} \PYG{o}{=} \PYG{n}{dt}\PYG{o}{*}\PYG{n}{func}\PYG{p}{(}\PYG{n}{y}\PYG{p}{,}\PYG{n}{t}\PYG{p}{)}
             \PYG{k}{return} \PYG{n}{y} \PYG{o}{+} \PYG{n}{dy}
-        \PYG{k}{return} \PYG{n}{scan\PYGZus{}func}
-
+        \PYG{c+c1}{\PYGZsh{} iterating over (a,b) where a and b are lists of same size}
+        \PYG{c+c1}{\PYGZsh{} results in the ith accumulative step in tf.scan receiving}
+        \PYG{c+c1}{\PYGZsh{} the ith elements of a and b zipped together}
+        \PYG{n}{y} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{scan}\PYG{p}{(}\PYG{n}{scan\PYGZus{}func}\PYG{p}{,} \PYG{p}{(}\PYG{n}{t}\PYG{p}{[:}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{],} \PYG{n}{time\PYGZus{}delta\PYGZus{}grid}\PYG{p}{),}\PYG{n}{y0}\PYG{p}{)}
+        \PYG{k}{return} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{concat}\PYG{p}{([[}\PYG{n}{y0}\PYG{p}{],} \PYG{n}{y}\PYG{p}{],} \PYG{n}{axis}\PYG{o}{=}\PYG{l+m+mi}{0}\PYG{p}{)}
 \PYG{k}{def} \PYG{n+nf}{tf\PYGZus{}odeint\PYGZus{}euler}\PYG{p}{(}\PYG{n}{func}\PYG{p}{,} \PYG{n}{y0}\PYG{p}{,} \PYG{n}{t}\PYG{p}{):}
     \PYG{c+c1}{\PYGZsh{} Convert input to TensorFlow Objects}
     \PYG{n}{t} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{convert\PYGZus{}to\PYGZus{}tensor}\PYG{p}{(}\PYG{n}{t}\PYG{p}{,} \PYG{n}{preferred\PYGZus{}dtype}\PYG{o}{=}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{float64}\PYG{p}{,} \PYG{n}{name}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}t\PYGZsq{}}\PYG{p}{)}
     \PYG{n}{y0} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{convert\PYGZus{}to\PYGZus{}tensor}\PYG{p}{(}\PYG{n}{y0}\PYG{p}{,} \PYG{n}{name}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}y0\PYGZsq{}}\PYG{p}{)}
+    \PYG{n}{tf\PYGZus{}check\PYGZus{}type}\PYG{p}{(}\PYG{n}{y0}\PYG{p}{,}\PYG{n}{t}\PYG{p}{)}
     \PYG{k}{return} \PYG{n}{\PYGZus{}Tf\PYGZus{}Integrator}\PYG{p}{()}\PYG{o}{.}\PYG{n}{integrate}\PYG{p}{(}\PYG{n}{func}\PYG{p}{,}\PYG{n}{y0}\PYG{p}{,}\PYG{n}{t}\PYG{p}{)}
 
 \PYG{c+c1}{\PYGZsh{} Define a function using Tensorflow math operations.}
-\PYG{c+c1}{\PYGZsh{} This creates a computational graph.}
+\PYG{c+c1}{\PYGZsh{} This creates the computation graph.}
 \PYG{k}{def} \PYG{n+nf}{f}\PYG{p}{(}\PYG{n}{X}\PYG{p}{,}\PYG{n}{t}\PYG{p}{):}
-    \PYG{n}{x} \PYG{o}{=} \PYG{n}{X}\PYG{p}{[:}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{]}
-    \PYG{n}{y} \PYG{o}{=} \PYG{n}{X}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{:]}
+    \PYG{c+c1}{\PYGZsh{} extracting a single value eg. X[0] returns a single value but}
+    \PYG{c+c1}{\PYGZsh{} we require a tensor, so we extract a range with one element.}
+    \PYG{n}{x} \PYG{o}{=} \PYG{n}{X}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{1}\PYG{p}{]}
+    \PYG{n}{y} \PYG{o}{=} \PYG{n}{X}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{:}\PYG{l+m+mi}{2}\PYG{p}{]}
     \PYG{n}{out} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{concat}\PYG{p}{([}\PYG{n}{x}\PYG{o}{\PYGZhy{}}\PYG{n}{y}\PYG{p}{,}\PYG{n}{y}\PYG{o}{\PYGZhy{}}\PYG{n}{x}\PYG{p}{],}\PYG{l+m+mi}{0}\PYG{p}{)}
     \PYG{k}{return} \PYG{n}{out}
 \PYG{n}{y0} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{constant}\PYG{p}{([}\PYG{l+m+mi}{1}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{dtype}\PYG{o}{=}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{float64}\PYG{p}{)}

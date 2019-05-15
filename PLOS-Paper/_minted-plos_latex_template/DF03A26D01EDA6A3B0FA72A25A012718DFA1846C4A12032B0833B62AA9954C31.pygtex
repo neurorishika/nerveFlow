@@ -1,0 +1,15 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Creating nodes in the computation graph}
+\PYG{n}{a} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{constant}\PYG{p}{([[}\PYG{l+m+mf}{1.}\PYG{p}{],[}\PYG{l+m+mf}{2.}\PYG{p}{],[}\PYG{l+m+mf}{3.}\PYG{p}{]],} \PYG{n}{dtype}\PYG{o}{=}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{float64}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} a 3x1 column matrix}
+\PYG{n}{b} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{constant}\PYG{p}{([[}\PYG{l+m+mf}{1.}\PYG{p}{,}\PYG{l+m+mf}{2.}\PYG{p}{,}\PYG{l+m+mf}{3.}\PYG{p}{]],} \PYG{n}{dtype}\PYG{o}{=}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{float64}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} a 1x3 row matrix}
+\PYG{n}{c} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{matmul}\PYG{p}{(}\PYG{n}{a}\PYG{p}{,} \PYG{n}{b}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} To run the graph, we need to create a session.}
+\PYG{c+c1}{\PYGZsh{} Creating the session initializes the computational device.}
+\PYG{n}{sess} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{Session}\PYG{p}{()} \PYG{c+c1}{\PYGZsh{} start a session}
+\PYG{n}{output} \PYG{o}{=} \PYG{n}{sess}\PYG{o}{.}\PYG{n}{run}\PYG{p}{(}\PYG{n}{c}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} compute the value of c}
+\PYG{n}{sess}\PYG{o}{.}\PYG{n}{close}\PYG{p}{()} \PYG{c+c1}{\PYGZsh{} end the session}
+\PYG{k}{print}\PYG{p}{(}\PYG{n}{output}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} TO automatically close the session after computation, Use:}
+\PYG{c+c1}{\PYGZsh{} with tf.Session() as sess:}
+\PYG{c+c1}{\PYGZsh{}    output = sess.run(c)}
+\end{Verbatim}

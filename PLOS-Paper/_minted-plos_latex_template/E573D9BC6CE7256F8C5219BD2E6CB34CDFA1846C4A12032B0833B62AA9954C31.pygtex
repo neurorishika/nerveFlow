@@ -1,0 +1,28 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{n\PYGZus{}n} \PYG{o}{=} \PYG{l+m+mi}{20} \PYG{c+c1}{\PYGZsh{} number of simultaneous neurons to simulate}
+\PYG{c+c1}{\PYGZsh{} parameters will now become n\PYGZus{}n\PYGZhy{}vectors}
+\PYG{n}{C\PYGZus{}m} \PYG{o}{=} \PYG{p}{[}\PYG{l+m+mf}{1.0}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}
+\PYG{n}{g\PYGZus{}K} \PYG{o}{=} \PYG{p}{[}\PYG{l+m+mf}{10.0}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}
+\PYG{n}{E\PYGZus{}K} \PYG{o}{=} \PYG{p}{[}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{95.0}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}
+\PYG{n}{g\PYGZus{}Na} \PYG{o}{=} \PYG{p}{[}\PYG{l+m+mi}{100}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}
+\PYG{n}{E\PYGZus{}Na} \PYG{o}{=} \PYG{p}{[}\PYG{l+m+mi}{50}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}
+\PYG{n}{g\PYGZus{}L} \PYG{o}{=} \PYG{p}{[}\PYG{l+m+mf}{0.15}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}
+\PYG{n}{E\PYGZus{}L} \PYG{o}{=} \PYG{p}{[}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{55.0}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}
+
+\PYG{c+c1}{\PYGZsh{} The state vector definition will change}
+\PYG{k}{def} \PYG{n+nf}{dXdt}\PYG{p}{(}\PYG{n}{X}\PYG{p}{,} \PYG{n}{t}\PYG{p}{):}
+    \PYG{n}{V} \PYG{o}{=} \PYG{n}{X}\PYG{p}{[:}\PYG{l+m+mi}{1}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}\PYG{p}{]}       \PYG{c+c1}{\PYGZsh{} First n\PYGZus{}n values are Membrane Voltage}
+    \PYG{n}{m} \PYG{o}{=} \PYG{n}{X}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}\PYG{p}{:}\PYG{l+m+mi}{2}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}\PYG{p}{]}  \PYG{c+c1}{\PYGZsh{} Next n\PYGZus{}n values are Sodium Activation Gating}
+    \PYG{n}{h} \PYG{o}{=} \PYG{n}{X}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}\PYG{p}{:}\PYG{l+m+mi}{3}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}\PYG{p}{]}  \PYG{c+c1}{\PYGZsh{} Next n\PYGZus{}n values are Sodium Inactivation Gating}
+    \PYG{n}{n} \PYG{o}{=} \PYG{n}{X}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}\PYG{p}{:]}       \PYG{c+c1}{\PYGZsh{} Last n\PYGZus{}n values are Potassium Gating}
+    \PYG{n}{dVdt} \PYG{o}{=} \PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{linspace}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{10}\PYG{p}{,}\PYG{n}{n\PYGZus{}n}\PYG{p}{)}\PYG{o}{\PYGZhy{}}\PYG{n}{I\PYGZus{}Na}\PYG{p}{(}\PYG{n}{V}\PYG{p}{,} \PYG{n}{m}\PYG{p}{,} \PYG{n}{h}\PYG{p}{)}\PYG{o}{\PYGZhy{}}\PYG{n}{I\PYGZus{}K}\PYG{p}{(}\PYG{n}{V}\PYG{p}{,} \PYG{n}{n}\PYG{p}{)}\PYG{o}{\PYGZhy{}}\PYG{n}{I\PYGZus{}L}\PYG{p}{(}\PYG{n}{V}\PYG{p}{))}\PYG{o}{/} \PYG{n}{C\PYGZus{}m}
+    \PYG{c+c1}{\PYGZsh{} Input current is linearly varied between 0 and 10}
+    \PYG{n}{m0}\PYG{p}{,}\PYG{n}{tm}\PYG{p}{,}\PYG{n}{h0}\PYG{p}{,}\PYG{n}{th} \PYG{o}{=} \PYG{n}{Na\PYGZus{}prop}\PYG{p}{(}\PYG{n}{V}\PYG{p}{)}
+    \PYG{n}{n0}\PYG{p}{,}\PYG{n}{tn} \PYG{o}{=} \PYG{n}{K\PYGZus{}prop}\PYG{p}{(}\PYG{n}{V}\PYG{p}{)}
+    \PYG{n}{dmdt} \PYG{o}{=} \PYG{o}{\PYGZhy{}} \PYG{p}{(}\PYG{l+m+mf}{1.0}\PYG{o}{/}\PYG{n}{tm}\PYG{p}{)}\PYG{o}{*}\PYG{p}{(}\PYG{n}{m}\PYG{o}{\PYGZhy{}}\PYG{n}{m0}\PYG{p}{)}
+    \PYG{n}{dhdt} \PYG{o}{=} \PYG{o}{\PYGZhy{}} \PYG{p}{(}\PYG{l+m+mf}{1.0}\PYG{o}{/}\PYG{n}{th}\PYG{p}{)}\PYG{o}{*}\PYG{p}{(}\PYG{n}{h}\PYG{o}{\PYGZhy{}}\PYG{n}{h0}\PYG{p}{)}
+    \PYG{n}{dndt} \PYG{o}{=} \PYG{o}{\PYGZhy{}} \PYG{p}{(}\PYG{l+m+mf}{1.0}\PYG{o}{/}\PYG{n}{tn}\PYG{p}{)}\PYG{o}{*}\PYG{p}{(}\PYG{n}{n}\PYG{o}{\PYGZhy{}}\PYG{n}{n0}\PYG{p}{)}
+    \PYG{n}{out} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{concat}\PYG{p}{([}\PYG{n}{dVdt}\PYG{p}{,}\PYG{n}{dmdt}\PYG{p}{,}\PYG{n}{dhdt}\PYG{p}{,}\PYG{n}{dndt}\PYG{p}{],}\PYG{l+m+mi}{0}\PYG{p}{)}
+    \PYG{k}{return} \PYG{n}{out}
+\PYG{n}{y0} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{constant}\PYG{p}{([}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{71}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}\PYG{o}{+}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{o}{*}\PYG{n}{n\PYGZus{}n}\PYG{p}{,} \PYG{n}{dtype}\PYG{o}{=}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{float64}\PYG{p}{)}
+\end{Verbatim}

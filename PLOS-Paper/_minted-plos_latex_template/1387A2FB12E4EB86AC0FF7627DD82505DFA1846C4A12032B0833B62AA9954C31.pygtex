@@ -1,0 +1,9 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} RK4 Integration Steps replace the Euler\PYGZsq{}s Updation Steps}
+\PYG{n}{k1} \PYG{o}{=} \PYG{n}{func}\PYG{p}{(}\PYG{n}{y}\PYG{p}{[:,}\PYG{n}{i}\PYG{p}{],} \PYG{n}{t}\PYG{p}{[}\PYG{n}{i}\PYG{p}{])}
+\PYG{n}{half\PYGZus{}step} \PYG{o}{=} \PYG{n}{t}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{+} \PYG{n}{time\PYGZus{}delta\PYGZus{}grid}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{/} \PYG{l+m+mi}{2}
+\PYG{n}{k2} \PYG{o}{=} \PYG{n}{func}\PYG{p}{(}\PYG{n}{y}\PYG{p}{[:,}\PYG{n}{i}\PYG{p}{]} \PYG{o}{+} \PYG{n}{time\PYGZus{}delta\PYGZus{}grid}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{*} \PYG{n}{k1} \PYG{o}{/} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{n}{half\PYGZus{}step}\PYG{p}{)}
+\PYG{n}{k3} \PYG{o}{=} \PYG{n}{func}\PYG{p}{(}\PYG{n}{y}\PYG{p}{[:,}\PYG{n}{i}\PYG{p}{]} \PYG{o}{+} \PYG{n}{time\PYGZus{}delta\PYGZus{}grid}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{*} \PYG{n}{k2} \PYG{o}{/} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{n}{half\PYGZus{}step}\PYG{p}{)}
+\PYG{n}{k4} \PYG{o}{=} \PYG{n}{func}\PYG{p}{(}\PYG{n}{y}\PYG{p}{[:,}\PYG{n}{i}\PYG{p}{]} \PYG{o}{+} \PYG{n}{time\PYGZus{}delta\PYGZus{}grid}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{*} \PYG{n}{k3}\PYG{p}{,} \PYG{n}{t} \PYG{o}{+} \PYG{n}{time\PYGZus{}delta\PYGZus{}grid}\PYG{p}{[}\PYG{n}{i}\PYG{p}{])}
+\PYG{n}{y}\PYG{p}{[:,}\PYG{n}{i}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{=} \PYG{p}{(}\PYG{n}{k1} \PYG{o}{+} \PYG{l+m+mi}{2} \PYG{o}{*} \PYG{n}{k2} \PYG{o}{+} \PYG{l+m+mi}{2} \PYG{o}{*} \PYG{n}{k3} \PYG{o}{+} \PYG{n}{k4}\PYG{p}{)} \PYG{o}{*} \PYG{p}{(}\PYG{n}{time\PYGZus{}delta\PYGZus{}grid}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{/} \PYG{l+m+mi}{6}\PYG{p}{)} \PYG{o}{+} \PYG{n}{y}\PYG{p}{[:,}\PYG{n}{i}\PYG{p}{]}
+\end{Verbatim}

@@ -1,0 +1,23 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} define the recursive function that takes in two values the}
+\PYG{c+c1}{\PYGZsh{} accumulated value and the additional input from a list.}
+\PYG{k}{def} \PYG{n+nf}{recursive\PYGZus{}addition}\PYG{p}{(}\PYG{n}{accumulator}\PYG{p}{,}\PYG{n}{new\PYGZus{}element}\PYG{p}{):}
+    \PYG{k}{return} \PYG{n}{accumulator}\PYG{o}{+}\PYG{n}{new\PYGZus{}element}
+\PYG{c+c1}{\PYGZsh{} define the list over which we iterate}
+\PYG{n}{elems} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{([}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{4}\PYG{p}{,} \PYG{l+m+mi}{5}\PYG{p}{,} \PYG{l+m+mi}{6}\PYG{p}{])}
+\PYG{c+c1}{\PYGZsh{} tf.scan takes in three inputs: the recursive function, the}
+\PYG{c+c1}{\PYGZsh{} list to iterate over and the initial value. If an initial}
+\PYG{c+c1}{\PYGZsh{} value is not provided, its taken as the first element of elems.}
+\PYG{c+c1}{\PYGZsh{} accumulate with no initializer}
+\PYG{n}{cum\PYGZus{}sum\PYGZus{}a} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{scan}\PYG{p}{(}\PYG{n}{recursive\PYGZus{}addition}\PYG{p}{,} \PYG{n}{elems}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} accumulate with initializer as the number 5}
+\PYG{n}{cum\PYGZus{}sum\PYGZus{}b} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{scan}\PYG{p}{(}\PYG{n}{recursive\PYGZus{}addition}\PYG{p}{,} \PYG{n}{elems}\PYG{p}{,} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{constant}\PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{,}\PYG{n}{dtype}\PYG{o}{=}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{int64}\PYG{p}{))}
+\PYG{k}{with} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{Session}\PYG{p}{()} \PYG{k}{as} \PYG{n}{sess}\PYG{p}{:}
+    \PYG{n}{output\PYGZus{}a} \PYG{o}{=} \PYG{n}{sess}\PYG{o}{.}\PYG{n}{run}\PYG{p}{(}\PYG{n}{cum\PYGZus{}sum\PYGZus{}a}\PYG{p}{)}
+    \PYG{n}{output\PYGZus{}b} \PYG{o}{=} \PYG{n}{sess}\PYG{o}{.}\PYG{n}{run}\PYG{p}{(}\PYG{n}{cum\PYGZus{}sum\PYGZus{}b}\PYG{p}{)}
+\PYG{k}{print}\PYG{p}{(}\PYG{n}{output\PYGZus{}a}\PYG{p}{)}
+\PYG{k}{print}\PYG{p}{(}\PYG{n}{output\PYGZus{}b}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} This prints :}
+\PYG{c+c1}{\PYGZsh{}[ 1  3  6 10 15 21]}
+\PYG{c+c1}{\PYGZsh{}[ 6  8 11 15 20 26]}
+\end{Verbatim}

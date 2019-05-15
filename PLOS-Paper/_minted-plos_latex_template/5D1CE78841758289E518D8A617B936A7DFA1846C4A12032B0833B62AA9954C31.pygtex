@@ -1,0 +1,15 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} create the Tensor with the random variables}
+\PYG{n}{x} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{constant}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{random}\PYG{o}{.}\PYG{n}{uniform}\PYG{p}{(}\PYG{n}{size} \PYG{o}{=} \PYG{p}{(}\PYG{l+m+mi}{10}\PYG{p}{,)),}\PYG{n}{dtype}\PYG{o}{=}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{float64}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} a list of 10s to select from if true}
+\PYG{n}{if\PYGZus{}true} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{constant}\PYG{p}{(}\PYG{l+m+mi}{10}\PYG{o}{*}\PYG{n}{np}\PYG{o}{.}\PYG{n}{ones}\PYG{p}{((}\PYG{l+m+mi}{10}\PYG{p}{,)),}\PYG{n}{dtype}\PYG{o}{=}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{float64}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} a list of \PYGZhy{}10s to select from if false}
+\PYG{n}{if\PYGZus{}false} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{constant}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{10}\PYG{o}{*}\PYG{n}{np}\PYG{o}{.}\PYG{n}{ones}\PYG{p}{((}\PYG{l+m+mi}{10}\PYG{p}{,)),}\PYG{n}{dtype}\PYG{o}{=}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{float64}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} perform the conditional masking}
+\PYG{n}{selection} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{where}\PYG{p}{(}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{greater}\PYG{p}{(}\PYG{n}{x}\PYG{p}{,}\PYG{l+m+mf}{0.5}\PYG{p}{),}\PYG{n}{if\PYGZus{}true}\PYG{p}{,}\PYG{n}{if\PYGZus{}false}\PYG{p}{)}
+\PYG{k}{with} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{Session}\PYG{p}{()} \PYG{k}{as} \PYG{n}{sess}\PYG{p}{:}
+    \PYG{n}{x\PYGZus{}out} \PYG{o}{=} \PYG{n}{sess}\PYG{o}{.}\PYG{n}{run}\PYG{p}{(}\PYG{n}{x}\PYG{p}{)}
+    \PYG{n}{selection\PYGZus{}out} \PYG{o}{=} \PYG{n}{sess}\PYG{o}{.}\PYG{n}{run}\PYG{p}{(}\PYG{n}{selection}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} If x\PYGZus{}out = [0.13 0.08 0.58 0.17 0.34 0.58 0.97 0.66 0.30 0.29 ],}
+\PYG{c+c1}{\PYGZsh{} selection\PYGZus{}out = [\PYGZhy{}10. \PYGZhy{}10.  10. \PYGZhy{}10. \PYGZhy{}10.  10.  10.  10. \PYGZhy{}10. \PYGZhy{}10.]}
+\end{Verbatim}

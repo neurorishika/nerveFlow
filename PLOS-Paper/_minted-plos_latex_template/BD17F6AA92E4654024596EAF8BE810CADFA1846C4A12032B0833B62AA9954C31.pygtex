@@ -1,0 +1,38 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{def} \PYG{n+nf}{integrate}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{,} \PYG{n}{func}\PYG{p}{,} \PYG{n}{y0}\PYG{p}{,} \PYG{n}{t}\PYG{p}{):}
+        \PYG{n}{time\PYGZus{}delta\PYGZus{}grid} \PYG{o}{=} \PYG{n}{t}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{:]} \PYG{o}{\PYGZhy{}} \PYG{n}{t}\PYG{p}{[:}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{]}
+        \PYG{k}{def} \PYG{n+nf}{scan\PYGZus{}func}\PYG{p}{(}\PYG{n}{y}\PYG{p}{,} \PYG{n}{t\PYGZus{}dt}\PYG{p}{):}
+            \PYG{c+c1}{\PYGZsh{} recall the necessary variables}
+            \PYG{n}{n\PYGZus{}} \PYG{o}{=} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{n\PYGZus{}}
+            \PYG{n}{F\PYGZus{}b} \PYG{o}{=} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{F\PYGZus{}b}
+            \PYG{n}{t}\PYG{p}{,} \PYG{n}{dt} \PYG{o}{=} \PYG{n}{t\PYGZus{}dt}
+            \PYG{c+c1}{\PYGZsh{} Differential updation}
+            \PYG{n}{dy} \PYG{o}{=} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{\PYGZus{}step\PYGZus{}func}\PYG{p}{(}\PYG{n}{func}\PYG{p}{,}\PYG{n}{t}\PYG{p}{,}\PYG{n}{dt}\PYG{p}{,}\PYG{n}{y}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} Make code more modular.}
+            \PYG{n}{dy} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{cast}\PYG{p}{(}\PYG{n}{dy}\PYG{p}{,} \PYG{n}{dtype}\PYG{o}{=}\PYG{n}{y}\PYG{o}{.}\PYG{n}{dtype}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} Failsafe}
+            \PYG{n}{out} \PYG{o}{=} \PYG{n}{y} \PYG{o}{+} \PYG{n}{dy} \PYG{c+c1}{\PYGZsh{} the result after differential updation}
+            \PYG{c+c1}{\PYGZsh{} Use specialized Integrator vs Normal Integrator (n=0)}
+            \PYG{k}{if} \PYG{n}{n\PYGZus{}}\PYG{o}{\PYGZgt{}}\PYG{l+m+mi}{0}\PYG{p}{:}
+                \PYG{c+c1}{\PYGZsh{} Extract the last n variables for fire times}
+                \PYG{n}{fire\PYGZus{}t} \PYG{o}{=} \PYG{n}{y}\PYG{p}{[}\PYG{o}{\PYGZhy{}}\PYG{n}{n\PYGZus{}}\PYG{p}{:]}
+                \PYG{c+c1}{\PYGZsh{} Change in fire\PYGZus{}t if neuron didnt fire = 0}
+                \PYG{n}{l} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{zeros}\PYG{p}{(}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{(}\PYG{n}{fire\PYGZus{}t}\PYG{p}{),}\PYG{n}{dtype}\PYG{o}{=}\PYG{n}{fire\PYGZus{}t}\PYG{o}{.}\PYG{n}{dtype}\PYG{p}{)}
+                \PYG{c+c1}{\PYGZsh{} Change in fire\PYGZus{}t if neuron fired = Current\PYGZhy{}Last Fire}
+                \PYG{n}{l\PYGZus{}} \PYG{o}{=} \PYG{n}{t}\PYG{o}{\PYGZhy{}}\PYG{n}{fire\PYGZus{}t}
+                \PYG{c+c1}{\PYGZsh{} Check if previous Voltage is less than Threshold}
+                \PYG{n}{z} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{less}\PYG{p}{(}\PYG{n}{y}\PYG{p}{[:}\PYG{n}{n\PYGZus{}}\PYG{p}{],}\PYG{n}{F\PYGZus{}b}\PYG{p}{)}
+                \PYG{c+c1}{\PYGZsh{} Check if Voltage is more than Threshold after update}
+                \PYG{n}{z\PYGZus{}} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{greater\PYGZus{}equal}\PYG{p}{(}\PYG{n}{out}\PYG{p}{[:}\PYG{n}{n\PYGZus{}}\PYG{p}{],}\PYG{n}{F\PYGZus{}b}\PYG{p}{)}
+                \PYG{n}{df} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{where}\PYG{p}{(}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{logical\PYGZus{}and}\PYG{p}{(}\PYG{n}{z}\PYG{p}{,}\PYG{n}{z\PYGZus{}}\PYG{p}{),}\PYG{n}{l\PYGZus{}}\PYG{p}{,}\PYG{n}{l}\PYG{p}{)}
+                \PYG{n}{fire\PYGZus{}t\PYGZus{}} \PYG{o}{=} \PYG{n}{fire\PYGZus{}t}\PYG{o}{+}\PYG{n}{df} \PYG{c+c1}{\PYGZsh{} Update firing time}
+                \PYG{k}{return} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{concat}\PYG{p}{([}\PYG{n}{out}\PYG{p}{[:}\PYG{o}{\PYGZhy{}}\PYG{n}{n\PYGZus{}}\PYG{p}{],}\PYG{n}{fire\PYGZus{}t\PYGZus{}}\PYG{p}{],}\PYG{l+m+mi}{0}\PYG{p}{)}
+            \PYG{k}{else}\PYG{p}{:}
+                \PYG{k}{return} \PYG{n}{out}
+        \PYG{n}{y} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{scan}\PYG{p}{(}\PYG{n}{scan\PYGZus{}func}\PYG{p}{,} \PYG{p}{(}\PYG{n}{t}\PYG{p}{[:}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{],} \PYG{n}{time\PYGZus{}delta\PYGZus{}grid}\PYG{p}{),}\PYG{n}{y0}\PYG{p}{)}
+        \PYG{k}{return} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{concat}\PYG{p}{([[}\PYG{n}{y0}\PYG{p}{],} \PYG{n}{y}\PYG{p}{],} \PYG{n}{axis}\PYG{o}{=}\PYG{l+m+mi}{0}\PYG{p}{)}
+
+\PYG{k}{def} \PYG{n+nf}{odeint}\PYG{p}{(}\PYG{n}{func}\PYG{p}{,} \PYG{n}{y0}\PYG{p}{,} \PYG{n}{t}\PYG{p}{,} \PYG{n}{n\PYGZus{}}\PYG{p}{,} \PYG{n}{F\PYGZus{}b}\PYG{p}{):}
+    \PYG{n}{t} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{convert\PYGZus{}to\PYGZus{}tensor}\PYG{p}{(}\PYG{n}{t}\PYG{p}{,} \PYG{n}{preferred\PYGZus{}dtype}\PYG{o}{=}\PYG{n}{tf}\PYG{o}{.}\PYG{n}{float64}\PYG{p}{,} \PYG{n}{name}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}t\PYGZsq{}}\PYG{p}{)}
+    \PYG{n}{y0} \PYG{o}{=} \PYG{n}{tf}\PYG{o}{.}\PYG{n}{convert\PYGZus{}to\PYGZus{}tensor}\PYG{p}{(}\PYG{n}{y0}\PYG{p}{,} \PYG{n}{name}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}y0\PYGZsq{}}\PYG{p}{)}
+    \PYG{n}{tf\PYGZus{}check\PYGZus{}type}\PYG{p}{(}\PYG{n}{y0}\PYG{p}{,}\PYG{n}{t}\PYG{p}{)}
+    \PYG{k}{return} \PYG{n}{\PYGZus{}Tf\PYGZus{}Integrator}\PYG{p}{(}\PYG{n}{n\PYGZus{}}\PYG{p}{,} \PYG{n}{F\PYGZus{}b}\PYG{p}{)}\PYG{o}{.}\PYG{n}{integrate}\PYG{p}{(}\PYG{n}{func}\PYG{p}{,}\PYG{n}{y0}\PYG{p}{,}\PYG{n}{t}\PYG{p}{)}
+\end{Verbatim}
