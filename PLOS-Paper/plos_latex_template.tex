@@ -221,25 +221,19 @@ In the form of a 7-day tutorial, the reader is introduced to the mathematical mo
 
 % Use "Eq" instead of "Equation" for equation citations.
 \section*{Motivation}
-The processing of information by the nervous system spans across space and time, and mathematical modelling of these dynamics have found to be an essential tool. These models have been used extensively to study the dynamics and mechanisms of information processing at both the individual neuron level and the system of neurons level. These models generally utilise systems of simultaneous ordinary differential equations (ODEs) which are solved as initial value problems using well-studied methods from numerical analysis such as Euler's Method and Runge Kutta methods. From a detailed study of the mechanism of action of the neurons, ion channels, neurotransmitters or neuromodulators and their dynamics in different models, equations have been found that describe the behaviour of neurons and synapse. By forming interconnected systems of these individual groups of differential equations, the overall dynamics and behaviour of networks can be studied through deterministic or stochastic simulations which can be easily perturbed unlike the case for in vivo experiments.
+The processing of information by the nervous system spans across space and time, and mathematical modelling of these dynamics have found to be an essential tool. These models have been used extensively to study the dynamics and mechanisms of information processing at both the individual neuron level~\cite{} and the system of neurons level.~\cite{} These models generally utilise systems of simultaneous ordinary differential equations (ODEs) which are solved as initial value problems using well-studied methods from numerical analysis such as Euler's Method and Runge Kutta methods.~\cite{} From a detailed study of the mechanism of action of the neurons, ion channels, neurotransmitters or neuromodulators and their dynamics in different models,~\cite{} equations have been found that describe the behaviour of neurons and synapse. By forming interconnected systems of these individual groups of differential equations, the overall dynamics and behaviour of networks can be studied through deterministic or stochastic simulations which can be easily perturbed unlike the case for in vivo experiments.
 
-A significant issue with such simulations is computational complexity. As the number of neurons increase, the number of possible synaptic connections increases quadratically. That is, for a system of $n$ neurons there can be at most $n^2$ different synapses of one type, each with its own set of equations. Thus, simulations can take very long times for large values of $n$. A solution to this problem is to implement some form of parallelisation in the ODE solver and the system of equations itself. One of the simplest methods of parallelizable computation is in the form of matrix algebra which can be accelerated using libraries such as BLAS which can only be used for accelerating CPU based computations. Similarly, CUDA is available for speeding up computations on Nvidia-based GPUs and TPUs. However, there is a barrier of entry to using low-level packages like CUDA for the general user as it sometimes requires an in-depth understanding of the architecture, particularly for troubleshooting.
+A significant issue with such simulations is computational complexity. As the number of neurons increase, the number of possible synaptic connections increases quadratically. That is, for a system of $n$ neurons there can be at most $n^2$ different synapses of one type, each with its own set of equations. Thus, simulations can take very long times for large values of $n$. A solution to this problem is to implement some form of parallelisation in the ODE solver and the system of equations itself. One of the simplest methods of parallelizable computation is in the form of matrix algebra which can be accelerated using libraries such as BLAS which can only be used for accelerating CPU based computations. Similarly, CUDA is available for speeding up computations on Nvidia-based GPUs and TPUs.~\cite{} However, there is a barrier of entry to using low-level packages like CUDA for the general user as it sometimes requires an in-depth understanding of the architecture, particularly for troubleshooting.
 
-This is where TensorFlow (an open-source Google product) gives us a massive edge. TensorFlow allows us much greater scalability and is way more flexible in terms of ease of implementation for specialised hardware. With minimal changes in the implementation, the code can be executed on a wide variety of heterogeneous and distributed systems ranging from mobile devices to clusters and specialised computing devices such as GPU and TPU cards. The modern advances in GPU/TPU design allow us to access even higher degrees of parallelisation. It is now even possible to have hundred of TeraFLOPS of computing power in a single small computing device. With TensorFlow, we can access these resources without even requiring an in-depth understanding of its architecture and technical knowledge of specific low-level packages like CUDA.
+This is where TensorFlow (an open-source Google product)~\cite{} gives us a massive edge. TensorFlow allows us much greater scalability and is way more flexible in terms of ease of implementation for specialised hardware. With minimal changes in the implementation, the code can be executed on a wide variety of heterogeneous and distributed systems ranging from mobile devices to clusters and specialised computing devices such as GPU and TPU cards. The modern advances in GPU/TPU design allow us to access even higher degrees of parallelisation. It is now even possible to have hundred of TeraFLOPS of computing power in a single small computing device. With TensorFlow, we can access these resources without even requiring an in-depth understanding of its architecture and technical knowledge of specific low-level packages like CUDA.
 
-%Lorem ipsum dolor sit~\cite{bib1} amet, consectetur adipiscing elit. Curabitur eget porta erat. Morbi consectetur est vel gravida pretium. Suspendisse ut dui eu ante cursus gravida non sed sem. Nullam Eq~(\ref{eq:schemeP}) sapien tellus, commodo id velit id, eleifend volutpat quam. Phasellus mauris velit, dapibus finibus elementum vel, pulvinar non tellus. Nunc pellentesque pretium diam, quis maximus dolor faucibus id.~\cite{bib2} Nunc convallis sodales ante, ut ullamcorper est egestas vitae. Nam sit amet enim ultrices, ultrices elit pulvinar, volutpat risus.
+%~\cite{bib1}
 
-%\begin{eqnarray}
-%\label{eq:schemeP}
-%	\mathrm{P_Y} = \underbrace{H(Y_n) - H(Y_n|\mathbf{V}^{Y}_{n})}_{S_Y} + \underbrace{H(Y_n|\mathbf{V}^{Y}_{n})- H(Y_n|\mathbf{V}^{X,Y}_{n})}_{T_{X\rightarrow Y}},
-%\end{eqnarray}
-
-\section*{Requirements for the Tutorial}
+\section*{How to use this Tutorial}
 
 For this tutorial, the reader is expected to have an understanding of Python and some commonly used packages such as Numpy and Matplotlib. The reader is also expected to know some amount of calculus particularly the theory of differential equations. Access to a computer will the following prerequisite software/packages is preferable: Python 3.6 or above, Jupyter Notebook, Numpy Python package, Matplotlib Python package, and TensorFlow 1.13 or above. All software can be installed using Anaconda Distribution of Python 3. Instructions for TensorFlow installation is available on their website.
 
-% For figure citations, please use "Fig" instead of "Figure".
-%Nulla mi mi, Fig~\ref{fig1} venenatis sed ipsum varius, volutpat euismod diam. Proin rutrum vel massa non gravida. Quisque tempor sem et dignissim rutrum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at justo vitae nulla elementum commodo eu id massa. In vitae diam ac augue semper tincidunt eu ut eros. Fusce fringilla erat porttitor lectus cursus, \nameref{S1_Video} vel sagittis arcu lobortis. Aliquam in enim semper, aliquam massa id, cursus neque. Praesent faucibus semper libero.
+% For figure citations, please use "Fig" instead of "Figure". Fig~\ref{fig1}
 
 % Place figure captions after the first paragraph in which they are cited.
 %\begin{figure}[!h]
@@ -250,15 +244,15 @@ For this tutorial, the reader is expected to have an understanding of Python and
 
 \section*{Day 1: Of Numerical Integration and Python}
 
-Our discussion begins with what Numerical Integration is and how we can use it to solve differential equations given the initial condition in Python.
+This section begins with what Numerical Integration is and how we can use it to solve differential equations given the initial condition in Python.
 
 \subsection*{What is Numerical Integration?}
 
-From the point of view of a theoretician, the ideal form of the solution to a differential equation given the initial conditions, i.e. an initial value problem (IVP), would be a formula for the solution function. But sometimes obtaining a formulaic solution is not always easy, and in many cases is absolutely impossible. So, what do we do when faced with a differential equation that we cannot solve? If you are only looking for long term behavior of a solution you can always sketch a direction field. This can be done without too much difficulty for some fairly complex differential equations that we can’t solve to get exact solutions. But, what if we need to determine how a specific solution behaves, including some values that the solution will take? In that case, we have to rely on numerical methods for solving the IVP such as euler's method or the Runge-Kutta Methods. 
+From the point of view of a theoretician, the ideal form of the solution to a differential equation given the initial conditions, i.e. an initial value problem (IVP), would be a formula for the solution function. But sometimes obtaining a formulaic solution is not always easy, and in many cases is absolutely impossible. So, what do we do when faced with a differential equation that we cannot solve? If you are only looking for long term behavior of a solution you can always sketch a direction field. [] This can be done without too much difficulty for some fairly complex differential equations that we can’t solve to get exact solutions. But, what if we need to determine how a specific solution behaves, including some values that the solution will take? In that case, we have to rely on numerical methods for solving the IVP such as Euler's method [] or the Runge-Kutta Methods []. 
 
 \subsection*{Euler's Method for Numerical Integration}
 
-We use Euler's Method to generate a numerical solution to an initial value problem of the form:
+Euler's Method is used to generate a numerical solution to an initial value problem of the form:
 
 \begin{eqnarray}\frac{dx}{dt} = f(x, t)\end{eqnarray}
 \begin{eqnarray}x(t_o) = x_o\end{eqnarray}
@@ -268,13 +262,11 @@ Firstly, we decide the interval over which we desire to find the solution, start
 \begin{eqnarray} t_{n+1} = t_n + \epsilon \end{eqnarray}
 \begin{eqnarray} x_{n+1} = x_n + \epsilon f(x_n, t_n) \end{eqnarray}
 
-to find the coordinates of the points in our numerical solution. We end this process once we have reached the end of the desired interval.
-
-For an graphical description of the Euler's method take a look at Fig 1.
+to find the coordinates of the points in our numerical solution. We end this process once we have reached the end of the desired interval. For an graphical description of the Euler's method, take a look at Fig~\ref{}.
 
 \subsection*{Euler's Method in Python}
 
-Let $\frac{dx}{dt}=f(x,t)$, we want to find $x(t)$ over $t\in[0,2)$, given that $x(0)=1$ and $f(x,t) = 5x$. The exact solution of this equation would be $x(t) = e^{5t}$.
+Let $\frac{dx}{dt}=f(x,t)$, we want to find $x(t)$ over $t\in[0,2)$, given that $x(0)=1$ and $f(x,t) = 5x$. The exact solution of this equation would be $x(t) = e^{5t}$. We implement the Euler's Method in Python as follows:
 
 \begin{minted}[linenos]{python}
 import numpy as np
@@ -289,24 +281,23 @@ for i in range(1,t.shape[0]):
     x[i] = epsilon*f(x[i-1],t[i-1])+x[i-1] # Euler Integration Step
 \end{minted}
 
-The exact solution and the numerical solution are compared in Fig 2.
+The exact solution and the numerical solution are compared in Fig~\ref{}.
 
 \subsection*{Euler and Vectors}
 
-Euler's Method also applies to vectors and can solve simultaneous differential equations.
+Euler's Method can also be easily applied to systems of equations. We can write the IVP of multiple dynamical variables as a vector equation and by changing the Euler's Algorithm to accomodate vectors, we can solve simultaneous differential equations.
 
 The Initial Value problem now becomes:
 
 \begin{eqnarray}\frac{d\vec{X}}{dt} = \vec{f}(\vec{X}, t)\end{eqnarray}
 \begin{eqnarray}\vec{X}(t_o) = \vec{X_o}\end{eqnarray}
 
-where $\vec{X}=[X_1,X_2...]$ and $\vec{f}(\vec{X}, t)=[f_1(\vec{X}, t),f_2(\vec{X}, t)...]$.
+where $\vec{X}=[X_1,X_2...]$ and $\vec{f}(\vec{X}, t)=[f_1(\vec{X}, t),f_2(\vec{X}, t)...]$. We rewrite the Euler's Method as:
 
-The Euler's Method becomes:
 \begin{eqnarray}t_{n+1} = t_n + \epsilon \end{eqnarray}
 \begin{eqnarray}\vec{X_{n+1}} = \vec{X_n} + \epsilon \vec{f}(\vec{X_n}, t_n)\end{eqnarray}
 
-Let $\frac{d\vec{X}}{dt}=f(\vec{X},t)$, we want to find $\vec{X}(t)$ over $t\in[0,2)$, given that $\vec{X}(t)=[x,y]$, $\vec{X}(0)=[1,0]$ and $f(\vec{X},t) = [x-y,y-x]$.
+Let $\frac{d\vec{X}}{dt}=f(\vec{X},t)$, we want to find $\vec{X}(t)$ over $t\in[0,2)$, given that $\vec{X}(t)=[x,y]$, $\vec{X}(0)=[1,0]$ and $f(\vec{X},t) = [x-y,y-x]$. We implement the modified algorithm as follows:
 
 \begin{minted}[linenos]{python}
 def f(X,t): # define the function f(x,t)
@@ -315,14 +306,13 @@ def f(X,t): # define the function f(x,t)
 t = np.arange(0,2,epsilon) # define an array for t
 X = np.zeros((2,t.shape[0])) # define an array for x
 X[:,0]= [1,0] # set initial condition
-
 for i in range(1,t.shape[0]):
     X[:,i] = epsilon*f(X[:,i-1],t[i-1])+X[:,i-1] # Euler Integration Step
 \end{minted}
 
 \subsection*{A Generalized function for Euler Integration}
 
-Now, we create a generalized function that takes in 3 inputs ie. the function $\vec{f}(\vec{y},t)$ when $\frac{d\vec{y}}{dt}=f(\vec{y},t)$, the time array, and initial vector $\vec{y_0}$.
+We create a generalized function that takes in 3 inputs ie. the function $\vec{f}(\vec{y},t)$ when $\frac{d\vec{y}}{dt}=f(\vec{y},t)$, the time array, and initial vector $\vec{y_0}$.
 
 \subsubsection*{Algorithm}
 
@@ -364,7 +354,7 @@ The formula for the Euler method is $x_{n+1}=x_n + \epsilon f(x_n,t_n)$ which ta
 \begin{eqnarray}y_{n+1}=y_n+k_2+O(\epsilon^3)\end{eqnarray}
 
 
-The symmetrization removes the O($\epsilon^2$) error term and now the method is second order and called the second order Runge-Kutta method or the midpoint method. Again, we can look at the method graphically in Fig.
+The symmetrization removes the O($\epsilon^2$) error term and now the method is second order and called the second order Runge-Kutta method or the midpoint method. Again, we can look at the method graphically in Fig~\ref{}.
 
 But we do not have to stop here. By further rewriting the equation, we can cancel higher order error terms and reach the most commonly used fourth-order Runge-Kutta Methods or RK4 method, which is described below:
 
@@ -374,9 +364,7 @@ But we do not have to stop here. By further rewriting the equation, we can cance
 \begin{eqnarray}k_4=f(x_n+\epsilon k_3,t_n+\epsilon)\end{eqnarray}
 \begin{eqnarray}y_{n+1}=y_n+\frac{\epsilon}{6}(k_1+2 k_2+2 k_3+k_4)+O(\epsilon^5)\end{eqnarray}
 
-Note that this numerical method is again easily converted to a vector algorithm by simply replacing $x_i$ by the vector $\vec{X_i}$. 
-
-This method is what we will use to simulate our networks.
+Note that this numerical method is again easily converted to a vector algorithm by simply replacing $x_i$ by the vector $\vec{X_i}$. This method is what we will use to simulate our networks.
 
 
 \subsection*{Generalized RK4 Method in Python}
@@ -404,17 +392,17 @@ where $L$ = Length of String and $\theta$ = angle made with vertical. To solve t
 
 \section*{Day 2: Let the Tensors Flow!}
 
-We start with our discussion with an introduction to TensorFlow followed by implementation of Numerical Integration techniques in TensorFlow.
+In this section, we introduce TensorFlow followed by the implementation of Numerical Integration techniques in TensorFlow.
 
 \subsection*{An Introduction to TensorFlow}
 
-TensorFlow is an open-source software library. TensorFlow was originally developed by researchers and engineers working on the Google Brain Team within Google’s Machine Intelligence research organization for the purposes of conducting machine learning and deep neural networks research, but the system is general enough to be applicable in a wide variety of other domains as well!
+TensorFlow is an open-source software library. TensorFlow was originally developed by researchers and engineers working on the Google Brain Team within Google’s Machine Intelligence research organization for the purposes of conducting machine learning and deep neural networks research, but the system is general enough to be applicable in a wide variety of other domains as well.~\cite{}
 
 Essentially, TensorFlow library for high performance numerical computation. Its flexible architecture allows easy deployment of computation across a variety of platforms (CPUs, GPUs, TPUs), and from desktops to clusters of servers. It is a python package that (much like BLAS on Intel MKL) speeds up Linear Algebra Computation. What is special about this system is that it is capable of utilizing GPUs and TPUs for computation and its written in a simpler language like python.
 
 \subsection*{Why GPU/TPU vs CPU?}
 
-The answer lies in the architecture (Fig):  
+The answer lies in the architecture Fig~\ref{}:  
 \begin{itemize}
 \item CPU = Faster per Core Processing, Slow but Large Memory Buffer, Few Cores
 \item GPU/TPU = Slower Processing, Faster but Smaller Memory Buffer, Many Cores
@@ -424,7 +412,7 @@ Thus GPUs and TPUs are optimized for large number of simple calculations done pa
 
 \subsection*{How TensorFlow works?}
 
-TensorFlow essentially performs numerical computations on multidimensional arrays (called tensors) using "data flow graphs" or "computation graphs". In these graphs, nodes represent variables/placeholders/constants or mathematical operations such as matrix multiplication or elementwise addition and the edges in the graph represent the flow of tensors between operations (nodes). Tensor is the central unit of data in TensorFlow giving the package its name. For example, look at the following computation graph in Fig. where "matmul" is the node which represents the matrix multiplication operation. a and b are input matrices (2-D tensors) and c is the resultant matrix.
+TensorFlow essentially performs numerical computations on multidimensional arrays (called tensors) using "data flow graphs" or "computation graphs". In these graphs, nodes represent variables/placeholders/constants or mathematical operations such as matrix multiplication or elementwise addition and the edges in the graph represent the flow of tensors between operations (nodes). Tensor is the central unit of data in TensorFlow giving the package its name. For example, look at the following computation graph in Fig~\ref{} where "matmul" is the node which represents the matrix multiplication operation. a and b are input matrices (2-D tensors) and c is the resultant matrix.
 
 \subsection*{Implementing a computation graph in TensorFlow}
 
@@ -472,9 +460,7 @@ print(output_b)
 #[ 6  8 11 15 20 26]
 \end{minted}
 
-As an \textbf{Exercise} try using tf.scan to compute the fibonacci sequence.
-
-One may have noticed that our integration is essentially an recursive process over the time series. Both the updation rules can just be written as a recursive function $F$ such that $X_{i+1}=F(X_i,t_i,\epsilon_i)$. We would want our output to be the array $[X_0,F(X_0,t_0,\epsilon_0),F(F(X_0,t_0,\epsilon_0),t_1,\epsilon_1)...]$. To get this, we just need to recursively iterate over the array of time and $\epsilon$ and apply a updation function $F$ recursively on the initial condition, which exactly what tf.scan enables us to do.
+As an \textbf{Exercise} try using tf.scan to compute the fibonacci sequence. One may have noticed that our integration is essentially an recursive process over the time series. Both the updation rules can just be written as a recursive function $F$ such that $X_{i+1}=F(X_i,t_i,\epsilon_i)$. We would want our output to be the array $[X_0,F(X_0,t_0,\epsilon_0),F(F(X_0,t_0,\epsilon_0),t_1,\epsilon_1)...]$. To get this, we just need to recursively iterate over the array of time and $\epsilon$ and apply a updation function $F$ recursively on the initial condition, which exactly what tf.scan enables us to do.
 
 \subsection*{Euler Integration Function in TensorFlow}
 
@@ -913,7 +899,7 @@ def I_inj_t(t):
     return tf.constant(current_input.T,dtype=tf.float64)[index] 
 \end{minted}
 
-\subsection*{Working with Sparse<->Dense Dynamics}
+\subsection*{Working with Sparse-Dense Dynamics}
 
 For performing the dynamical updates for the synapses, we need only as many variables as the number of synapse x number of equations required for each synapse. Here our synapse models require only one dynamical variable ie. open fraction [O] which we will store as an k-vector where k is the number of synapses.
 
@@ -937,7 +923,7 @@ The best way to represent this calculation is to use the connectivity matrix $\m
 \end{bmatrix}
 \end{eqnarray}
 
-\begin{eqnarray}vec{[O]}=[O_1,O_2...O_k]\end{eqnarray}
+\begin{eqnarray}\vec{[O]}=[O_1,O_2...O_k]\end{eqnarray}
 
 \begin{eqnarray}
 \mathbf{O}=
@@ -1273,40 +1259,6 @@ With the runner-caller implementation, we have solved the issue of memory limita
 1. \textbf{Delay Dependent Activity:} If the implementation of an model requires a delay differential equation (DDEs) that accesses the value of the parameters at a earlier time, we cannot use this programming paradigm directly as it has only, at most, one timestep memory. This is also a limitation of using the scan function. Exploring alternatives to tf.scan() and other techniques of solving DDEs is an option.
 
 2. \textbf{Optimal Distributed Computing:} To maximize the utility of distributed systems, the algorithm needs to be capable of splitting the computation into tasks that can be run parallely (simultaneously) in different computational units. Since we are working with numerical integration, the results of the last step need to be known to perform the next computation. This, in a way limits out ability to use distributed computing. TensorFlow automatically tries to utilize all available resources efficiently but it may not be the optimal usage. One way to enforce distribution is to manually distribute parts of the computational graph to specialized computing units. For example, the actual session can be forced to be executed on the server with maximum memory but the sub-computations such as the RK4 integration steps can be distributed to servers with more GPUs.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 \section*{Discussion}
 
